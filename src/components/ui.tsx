@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 
-/** Fade + slide-up on scroll. */
+/** Fade + slide-up on scroll — tuned for fast, non-blocking HR scanning. */
 export function Reveal({
   children,
   delay = 0,
@@ -16,10 +16,10 @@ export function Reveal({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.45, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}
@@ -65,27 +65,27 @@ export function SectionHeading({
   return (
     <Reveal className={align === "center" ? "text-center max-w-2xl mx-auto" : "max-w-2xl"}>
       <div
-        className={`flex items-center gap-3 mb-5 ${align === "center" ? "justify-center" : ""}`}
+        className={`flex items-center gap-3 mb-4 ${align === "center" ? "justify-center" : ""}`}
       >
-        <span className="h-px w-8 bg-brand-cyan/60" />
-        <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-brand-cyan">
+        <span className="h-px w-8 bg-cyan-400/70" />
+        <span className="text-xs font-mono font-medium uppercase tracking-[0.18em] text-cyan-400">
           {eyebrow}
         </span>
       </div>
-      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.1]">
+      <h2 className="text-3xl sm:text-4xl lg:text-[2.65rem] font-bold tracking-tight text-slate-50 leading-[1.15]">
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-5 text-base sm:text-lg text-zinc-400 leading-relaxed">{subtitle}</p>
+        <p className="mt-4 text-base sm:text-[17px] text-slate-300 leading-relaxed">{subtitle}</p>
       )}
     </Reveal>
   );
 }
 
-/** Small pill used for tech stacks. */
+/** Readable pill used for tech stacks. */
 export function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.07] text-[11px] font-mono text-zinc-400">
+    <span className="px-2.5 py-1 rounded-md bg-slate-800/60 border border-slate-700/60 text-xs font-mono text-slate-300">
       {children}
     </span>
   );
@@ -126,21 +126,21 @@ export function Screenshot({
   priority?: boolean;
 }) {
   return (
-    <div className="w-full h-full bg-zinc-950 rounded-xl border border-zinc-800/80 overflow-hidden flex flex-col shadow-2xl select-none">
-      <div className="bg-zinc-900 px-4 py-2.5 flex items-center justify-between gap-3 border-b border-zinc-800 shrink-0">
+    <div className="w-full h-full bg-[#090E18] rounded-xl border border-slate-800/90 overflow-hidden flex flex-col shadow-2xl select-none">
+      <div className="bg-[#0F172A] px-4 py-2.5 flex items-center justify-between gap-3 border-b border-slate-800 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <div className="flex gap-1.5 shrink-0">
             <span className="w-3 h-3 rounded-full bg-red-500/80 block" />
             <span className="w-3 h-3 rounded-full bg-yellow-500/80 block" />
             <span className="w-3 h-3 rounded-full bg-green-500/80 block" />
           </div>
-          <span className="text-zinc-500 text-[10px] font-mono ml-2 truncate">{label}</span>
+          <span className="text-slate-400 text-[11px] font-mono ml-2 truncate">{label}</span>
         </div>
-        <span className="hidden sm:block shrink-0 px-2 py-0.5 rounded bg-zinc-950 border border-zinc-800 text-[9px] font-mono uppercase tracking-wider text-brand-cyan">
+        <span className="hidden sm:block shrink-0 px-2 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-[10px] font-mono uppercase tracking-wider text-cyan-400">
           Live system
         </span>
       </div>
-      <div className={`relative flex-1 min-h-0 ${fit === "cover" ? "bg-white" : "bg-zinc-900"}`}>
+      <div className={`relative flex-1 min-h-0 ${fit === "cover" ? "bg-white" : "bg-slate-900"}`}>
         <Image
           src={src}
           alt={alt}

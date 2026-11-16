@@ -144,12 +144,12 @@ function ViewLink({ href }: { href: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group/link inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-brand-cyan transition-colors"
+      className="group/link inline-flex items-center gap-1.5 text-[13px] font-semibold text-slate-100 hover:text-cyan-400 transition-colors"
     >
       View Project
       <ArrowUpRight
-        size={14}
-        className="text-zinc-500 group-hover/link:text-brand-cyan group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all"
+        size={15}
+        className="text-slate-400 group-hover/link:text-cyan-400 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-all"
       />
     </a>
   );
@@ -161,9 +161,9 @@ function FeaturedRow({ project, flip }: { project: Project; flip: boolean }) {
       <article className="group grid lg:grid-cols-[1.15fr_0.85fr] gap-8 lg:gap-12 items-center">
         {/* Visual */}
         <div className={flip ? "lg:order-2" : ""}>
-          <div className="relative rounded-2xl border border-white/[0.07] bg-zinc-950 p-2 overflow-hidden transition-all duration-500 group-hover:border-brand-cyan/25">
-            <div className="absolute -inset-10 radial-glow opacity-0 group-hover:opacity-[0.08] blur-3xl transition-opacity duration-700 pointer-events-none" />
-            <div className="relative h-[300px] sm:h-[400px] lg:h-[440px] transition-transform duration-700 group-hover:scale-[1.02]">
+          <div className="relative rounded-2xl border border-slate-800/90 bg-[#0B111E] p-2 overflow-hidden transition-all duration-300 group-hover:border-cyan-400/35">
+            <div className="absolute -inset-10 radial-glow opacity-0 group-hover:opacity-[0.08] blur-3xl transition-opacity duration-500 pointer-events-none" />
+            <div className="relative h-[300px] sm:h-[400px] lg:h-[440px] transition-transform duration-500 group-hover:scale-[1.015]">
               {project.visual}
             </div>
           </div>
@@ -172,27 +172,29 @@ function FeaturedRow({ project, flip }: { project: Project; flip: boolean }) {
         {/* Copy */}
         <div className={flip ? "lg:order-1" : ""}>
           <div className="flex items-center gap-3">
-            <span className="text-5xl font-bold text-white/[0.07] tracking-tighter leading-none">
+            <span className="text-5xl font-bold text-slate-800 tracking-tighter leading-none select-none">
               {project.no}
             </span>
-            <span className="px-2.5 py-1 rounded-md bg-brand-cyan/10 border border-brand-cyan/20 text-[10px] font-mono uppercase tracking-[0.12em] text-brand-cyan">
+            <span className="px-2.5 py-1 rounded-md bg-cyan-400/10 border border-cyan-400/25 text-xs font-mono font-medium uppercase tracking-[0.1em] text-cyan-400">
               {project.category}
             </span>
           </div>
 
-          <h3 className="mt-4 text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          <h3 className="mt-4 text-2xl sm:text-3xl font-bold text-slate-50 tracking-tight">
             {project.name}
           </h3>
           {project.tagline && (
-            <p className="mt-1 text-sm font-mono text-zinc-500">{project.tagline}</p>
+            <p className="mt-1 text-sm font-mono text-slate-400">{project.tagline}</p>
           )}
 
-          <p className="mt-4 text-base text-zinc-400 leading-relaxed">{project.description}</p>
+          <p className="mt-4 text-base sm:text-[17px] text-slate-300 leading-relaxed">
+            {project.description}
+          </p>
 
           {project.badge && (
-            <div className="mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/10 bg-white/[0.03]">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse" />
-              <span className="text-[11px] font-semibold text-zinc-200">{project.badge}</span>
+            <div className="mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-emerald-500/25 bg-emerald-500/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-xs font-semibold text-emerald-300">{project.badge}</span>
             </div>
           )}
 
@@ -215,17 +217,17 @@ function FeaturedRow({ project, flip }: { project: Project; flip: boolean }) {
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   return (
-    <Reveal delay={(index % 2) * 0.08}>
-      <article className="group h-full flex flex-col rounded-2xl border border-white/[0.07] bg-white/[0.015] overflow-hidden transition-all duration-500 hover:border-brand-cyan/25 hover:bg-white/[0.03]">
+    <Reveal delay={(index % 2) * 0.06}>
+      <article className="group h-full flex flex-col rounded-2xl border border-slate-800/90 bg-[#0B111E]/90 overflow-hidden transition-all duration-300 hover:border-cyan-400/35 hover:bg-[#0E1523]">
         <div className="relative p-3 pb-0">
           <div className="relative h-[240px] sm:h-[280px] overflow-hidden rounded-xl">
-            <div className="h-full transition-transform duration-700 group-hover:scale-[1.03]">
+            <div className="h-full transition-transform duration-500 group-hover:scale-[1.02]">
               {project.visual}
             </div>
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-t from-[#070B12]/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           </div>
           {project.badge && (
-            <span className="absolute top-6 right-6 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-sm border border-brand-cyan/25 text-[10px] font-mono text-brand-cyan">
+            <span className="absolute top-6 right-6 px-2.5 py-1 rounded-md bg-slate-950/90 backdrop-blur-sm border border-cyan-400/30 text-xs font-mono text-cyan-300">
               {project.badge}
             </span>
           )}
@@ -234,17 +236,21 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         <div className="flex-1 flex flex-col p-6 sm:p-7">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-brand-cyan">
+              <span className="text-xs font-mono font-medium uppercase tracking-[0.12em] text-cyan-400">
                 {project.category}
               </span>
-              <h3 className="mt-2 text-xl font-bold text-white tracking-tight">{project.name}</h3>
+              <h3 className="mt-2 text-xl font-bold text-slate-50 tracking-tight">
+                {project.name}
+              </h3>
             </div>
-            <span className="text-2xl font-bold text-white/[0.07] tracking-tighter leading-none">
+            <span className="text-2xl font-bold text-slate-800 tracking-tighter leading-none select-none">
               {project.no}
             </span>
           </div>
 
-          <p className="mt-3 text-sm text-zinc-400 leading-relaxed flex-1">{project.description}</p>
+          <p className="mt-3 text-[15px] text-slate-300 leading-relaxed flex-1">
+            {project.description}
+          </p>
 
           <div className="mt-5 flex flex-wrap gap-2">
             {project.stack.map((t) => (
@@ -253,7 +259,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           </div>
 
           {project.href && (
-            <div className="mt-6 pt-5 border-t border-white/[0.06]">
+            <div className="mt-6 pt-5 border-t border-slate-800/80">
               <ViewLink href={project.href} />
             </div>
           )}

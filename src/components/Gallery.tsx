@@ -149,7 +149,7 @@ export default function Gallery() {
   }, [step]);
 
   return (
-    <section className="relative py-24 lg:py-32 border-t border-white/5">
+    <section className="relative py-24 lg:py-32 border-t border-slate-800/70">
       <div className="max-w-7xl mx-auto px-6">
         <SectionHeading
           eyebrow="Gallery"
@@ -159,24 +159,24 @@ export default function Gallery() {
 
         <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5">
           {items.map((item, i) => (
-            <Reveal key={item.title} delay={(i % 3) * 0.06} className={item.span}>
+            <Reveal key={item.title} delay={(i % 3) * 0.05} className={item.span}>
               <button
                 onClick={() => open(i)}
-                className="group relative w-full h-[260px] sm:h-[300px] rounded-2xl border border-white/[0.07] bg-zinc-950 overflow-hidden text-left transition-all duration-500 hover:border-brand-cyan/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
+                className="group relative w-full h-[260px] sm:h-[300px] rounded-2xl border border-slate-800/90 bg-[#0B111E] overflow-hidden text-left transition-all duration-300 hover:border-cyan-400/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               >
-                <div className="absolute inset-0 p-2 transition-transform duration-700 group-hover:scale-[1.02]">
+                <div className="absolute inset-0 p-2 transition-transform duration-500 group-hover:scale-[1.02]">
                   {visual(item, "cover")}
                 </div>
 
                 {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-400" />
-                <div className="absolute inset-x-0 bottom-0 p-5 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400">
-                  <p className="text-[10px] font-mono uppercase tracking-[0.15em] text-brand-cyan">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#070B12] via-[#070B12]/60 to-transparent opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-x-0 bottom-0 p-5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                  <p className="text-xs font-mono uppercase tracking-[0.12em] text-cyan-400">
                     {item.category}
                   </p>
                   <div className="mt-1.5 flex items-center justify-between gap-3">
-                    <h3 className="text-base font-bold text-white tracking-tight">{item.title}</h3>
-                    <span className="inline-flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-md bg-white/10 border border-white/15 text-[11px] font-semibold text-white">
+                    <h3 className="text-base font-bold text-slate-50 tracking-tight">{item.title}</h3>
+                    <span className="inline-flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-md bg-slate-900/90 border border-slate-700 text-xs font-semibold text-slate-100">
                       <Expand size={12} />
                       View
                     </span>

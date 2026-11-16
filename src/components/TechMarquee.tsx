@@ -19,10 +19,10 @@ export default function TechMarquee() {
   return (
     <section
       aria-label="Technologies I work with"
-      className="relative border-y border-white/5 bg-white/[0.015] py-6 overflow-hidden"
+      className="relative border-y border-slate-800/70 bg-slate-900/30 py-6 overflow-hidden"
     >
-      <div className="absolute inset-y-0 left-0 w-24 sm:w-40 bg-gradient-to-r from-[#030303] to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-24 sm:w-40 bg-gradient-to-l from-[#030303] to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-24 sm:w-40 bg-gradient-to-r from-[#070B12] to-transparent z-10 pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-24 sm:w-40 bg-gradient-to-l from-[#070B12] to-transparent z-10 pointer-events-none" />
 
       <div className="flex w-max animate-marquee">
         {[0, 1].map((copy) => (
@@ -33,7 +33,7 @@ export default function TechMarquee() {
                   className="w-2 h-2 rounded-full shrink-0"
                   style={{ backgroundColor: t.color, boxShadow: `0 0 10px ${t.color}55` }}
                 />
-                <span className="text-sm font-mono text-zinc-500 whitespace-nowrap">{t.name}</span>
+                <span className="text-sm font-mono text-slate-300 whitespace-nowrap">{t.name}</span>
               </div>
             ))}
           </div>

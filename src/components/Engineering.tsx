@@ -33,7 +33,7 @@ const pillars = [
 
 export default function Engineering() {
   return (
-    <section className="relative py-24 lg:py-32 border-t border-white/5">
+    <section className="relative py-24 lg:py-32 border-t border-slate-800/70">
       <div className="max-w-7xl mx-auto px-6">
         <SectionHeading
           eyebrow="Process"
@@ -43,16 +43,16 @@ export default function Engineering() {
 
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {pillars.map((p, i) => (
-            <Reveal key={p.no} delay={i * 0.08}>
-              <div className="group relative h-full rounded-2xl border border-white/[0.07] bg-white/[0.015] p-7 overflow-hidden transition-all duration-500 hover:border-brand-cyan/25 hover:bg-white/[0.035]">
-                <span className="absolute top-5 right-6 text-4xl font-bold text-white/[0.05] tracking-tighter leading-none">
+            <Reveal key={p.no} delay={i * 0.06}>
+              <div className="group relative h-full rounded-2xl border border-slate-800/90 bg-[#0B111E]/90 p-7 overflow-hidden transition-all duration-300 hover:border-cyan-400/35 hover:bg-[#0E1523]">
+                <span className="absolute top-5 right-6 text-4xl font-bold text-slate-800/90 tracking-tighter leading-none select-none">
                   {p.no}
                 </span>
-                <div className="w-11 h-11 rounded-xl bg-brand-cyan/10 border border-brand-cyan/20 flex items-center justify-center text-brand-cyan group-hover:scale-105 transition-transform duration-500">
-                  <p.icon size={19} />
+                <div className="w-11 h-11 rounded-xl bg-cyan-400/10 border border-cyan-400/25 flex items-center justify-center text-cyan-400 group-hover:scale-105 transition-transform duration-300">
+                  <p.icon size={20} />
                 </div>
-                <h3 className="mt-5 text-lg font-bold text-white tracking-tight">{p.title}</h3>
-                <p className="mt-2.5 text-sm text-zinc-400 leading-relaxed">{p.body}</p>
+                <h3 className="mt-5 text-lg font-bold text-slate-50 tracking-tight">{p.title}</h3>
+                <p className="mt-2.5 text-[15px] text-slate-300 leading-relaxed">{p.body}</p>
               </div>
             </Reveal>
           ))}
