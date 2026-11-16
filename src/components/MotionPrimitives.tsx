@@ -1,137 +1,53 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   motion,
+  useInView,
   useMotionValue,
   useSpring,
   useReducedMotion,
   type HTMLMotionProps,
 } from "framer-motion";
 
-export type BubbleTone =
-  | "lime"
-  | "mint"
-  | "aqua"
-  | "sky"
-  | "lavender"
-  | "pink"
-  | "iridescent";
-
-const BUBBLE_GRADIENTS: Record<BubbleTone, string> = {
-  lime: "radial-gradient(circle at 32% 28%, #F4FFCC 0%, #D6FF62 46%, #A8DE2A 100%)",
-  mint: "radial-gradient(circle at 30% 26%, #ECFFF6 0%, #B7F5DA 52%, #7ADDB3 100%)",
-  aqua: "radial-gradient(circle at 32% 28%, #E6FBFF 0%, #A5E8F5 50%, #5FC8E3 100%)",
-  sky: "radial-gradient(circle at 30% 26%, #E3F4FF 0%, #83CFFF 52%, #47A7EB 100%)",
-  lavender: "radial-gradient(circle at 32% 28%, #F1ECFF 0%, #C9B8FF 52%, #9B82F5 100%)",
-  pink: "radial-gradient(circle at 32% 28%, #FFEBF3 0%, #FFB8D5 52%, #EE84B0 100%)",
-  iridescent:
-    "radial-gradient(circle at 28% 24%, #FFFFFF 0%, #A5E8F5 28%, #C9B8FF 58%, #FFB8D5 85%, #D6FF62 100%)",
-};
-
-interface GlossyBubbleProps extends HTMLMotionProps<"div"> {
-  tone?: BubbleTone;
-  interactive?: boolean;
-  floatDuration?: number;
-  floatY?: number;
-}
-
-/**
- * Tactile 3D glossy sphere with specular highlights and optional cursor-spring response.
- */
-export function GlossyBubble({
-  tone = "aqua",
-  interactive = true,
-  floatDuration = 6.5,
-  floatY = 10,
-  className = "",
-  style,
-  children,
-  ...rest
-}: GlossyBubbleProps) {
-  const prefersReduced = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 180, damping: 18 });
-  const springY = useSpring(y, { stiffness: 180, damping: 18 });
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!interactive || prefersReduced || !ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.16;
-    const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.16;
-    x.set(dx);
-    y.set(dy);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      animate={
-        prefersReduced
-          ? undefined
-          : {
-              y: [0, -floatY, 0],
-              rotate: [0, 1.8, 0, -1.2, 0],
-            }
-      }
-      transition={
-        prefersReduced
-          ? undefined
-          : {
-              duration: floatDuration,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }
-      }
-      whileHover={interactive && !prefersReduced ? { scale: 1.04 } : undefined}
-      whileTap={interactive && !prefersReduced ? { scale: 0.96 } : undefined}
-      style={{
-        background: BUBBLE_GRADIENTS[tone],
-        x: springX,
-        y: springY,
-        ...style,
-      }}
-      className={`glossy-sphere select-none ${className}`}
-      {...rest}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
 interface RevealProps extends HTMLMotionProps<"div"> {
   delay?: number;
   yOffset?: number;
+  clip?: boolean;
 }
 
 /**
- * Viewport-triggered editorial reveal that respects prefers-reduced-motion.
+ * Viewport-triggered reveal with optional clip-path entrance.
  */
 export function Reveal({
   children,
   delay = 0,
-  yOffset = 20,
+  yOffset = 22,
+  clip = false,
   className = "",
   ...rest
 }: RevealProps) {
   const prefersReduced = useReducedMotion();
 
+  const initial = prefersReduced
+    ? { opacity: 1 }
+    : clip
+      ? { opacity: 0, y: yOffset, clipPath: "inset(0 0 100% 0)" }
+      : { opacity: 0, y: yOffset };
+
+  const whileInView = prefersReduced
+    ? { opacity: 1 }
+    : clip
+      ? { opacity: 1, y: 0, clipPath: "inset(0 0 0% 0)" }
+      : { opacity: 1, y: 0 };
+
   return (
     <motion.div
-      initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: yOffset }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-64px" }}
+      initial={initial}
+      whileInView={whileInView}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{
-        duration: 0.55,
+        duration: 0.5,
         delay,
         ease: [0.22, 1, 0.36, 1],
       }}
@@ -150,21 +66,21 @@ interface MagneticProps {
 }
 
 /**
- * Subtle magnetic pull on pointer hover for primary CTAs.
+ * Cursor-reactive magnetic pull for primary interactive controls.
  */
-export function Magnetic({ children, className = "", strength = 0.22 }: MagneticProps) {
+export function Magnetic({ children, className = "", strength = 0.2 }: MagneticProps) {
   const prefersReduced = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 260, damping: 20 });
-  const sy = useSpring(y, { stiffness: 260, damping: 20 });
+  const sx = useSpring(x, { stiffness: 280, damping: 20 });
+  const sy = useSpring(y, { stiffness: 280, damping: 20 });
 
   const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (prefersReduced || !ref.current) return;
-    const r = ref.current.getBoundingClientRect();
-    x.set((e.clientX - (r.left + r.width / 2)) * strength);
-    y.set((e.clientY - (r.top + r.height / 2)) * strength);
+    const rect = ref.current.getBoundingClientRect();
+    x.set((e.clientX - (rect.left + rect.width / 2)) * strength);
+    y.set((e.clientY - (rect.top + rect.height / 2)) * strength);
   };
 
   const handleLeave = () => {
@@ -182,5 +98,128 @@ export function Magnetic({ children, className = "", strength = 0.22 }: Magnetic
     >
       {children}
     </motion.div>
+  );
+}
+
+interface AnimatedCounterProps {
+  target: number;
+  suffix?: string;
+  durationMs?: number;
+}
+
+/**
+ * Viewport-triggered numeric counter with instant reduced-motion fallback.
+ */
+export function AnimatedCounter({
+  target,
+  suffix = "",
+  durationMs = 1100,
+}: AnimatedCounterProps) {
+  const prefersReduced = useReducedMotion();
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    if (prefersReduced || !inView) return;
+
+    let rafId = 0;
+    const start = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / durationMs, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target));
+      if (progress < 1) {
+        rafId = requestAnimationFrame(tick);
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [inView, target, durationMs, prefersReduced]);
+
+  const displayed = prefersReduced ? target : value;
+
+  return (
+    <span ref={ref}>
+      {displayed.toLocaleString("en-US")}
+      {suffix}
+    </span>
+  );
+}
+
+interface StickerBadgeProps {
+  children: React.ReactNode;
+  bg?: string;
+  textColor?: string;
+  rotate?: number;
+  className?: string;
+}
+
+/**
+ * Die-cut neo-brutalist sticker badge with tactile hover wiggle.
+ */
+export function StickerBadge({
+  children,
+  bg = "#D7FF45",
+  textColor = "#171717",
+  rotate = -2,
+  className = "",
+}: StickerBadgeProps) {
+  const prefersReduced = useReducedMotion();
+
+  return (
+    <motion.span
+      initial={{ rotate }}
+      whileHover={prefersReduced ? undefined : { rotate: rotate * -1, scale: 1.06, y: -2 }}
+      transition={{ type: "spring", stiffness: 360, damping: 18 }}
+      style={{ backgroundColor: bg, color: textColor }}
+      className={`sticker-tag inline-flex items-center gap-1.5 px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] select-none ${className}`}
+    >
+      {children}
+    </motion.span>
+  );
+}
+
+interface MarqueeStripProps {
+  items: string[];
+  bg?: string;
+  textColor?: string;
+  separator?: string;
+  className?: string;
+}
+
+/**
+ * Kinetic scrolling ticker strip with CSS marquee and reduced-motion wrap fallback.
+ */
+export function MarqueeStrip({
+  items,
+  bg = "#171717",
+  textColor = "#D7FF45",
+  separator = "✦",
+  className = "",
+}: MarqueeStripProps) {
+  const track = [...items, ...items, ...items, ...items];
+
+  return (
+    <div
+      style={{ backgroundColor: bg, color: textColor }}
+      className={`w-full overflow-hidden border-y-[2.5px] border-[#171717] py-3 select-none ${className}`}
+    >
+      <div className="flex w-max animate-marquee-x motion-reduce:animate-none motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:w-full motion-reduce:gap-y-2">
+        {track.map((item, idx) => (
+          <div key={`${item}-${idx}`} className="flex items-center shrink-0">
+            <span className="font-mono text-xs sm:text-sm font-bold uppercase tracking-[0.16em] px-4 sm:px-6 whitespace-nowrap">
+              {item}
+            </span>
+            <span aria-hidden="true" className="text-sm opacity-80">
+              {separator}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

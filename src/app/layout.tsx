@@ -1,7 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import {
+  Archivo_Black,
+  Space_Grotesk,
+  Plus_Jakarta_Sans,
+  JetBrains_Mono,
+} from "next/font/google";
 import MotionProvider from "@/components/MotionProvider";
 import "./globals.css";
+
+const archivoBlack = Archivo_Black({
+  variable: "--font-heavy",
+  subsets: ["latin"],
+  weight: "400",
+});
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
@@ -9,7 +20,7 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["500", "600", "700"],
 });
 
-const inter = Inter({
+const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -18,12 +29,12 @@ const inter = Inter({
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["500", "700"],
 });
 
-const title = "Muhammad Fathi Farhat — Backend & Fullstack Developer";
+const title = "Fathi Farhat — Backend & Fullstack Developer";
 const description =
-  "Backend & Fullstack Developer based in Jakarta with 3+ years of experience building scalable applications, enterprise approval systems, and thoughtful digital products.";
+  "Backend & Fullstack Developer based in Jakarta, Indonesia. Turning complex problems into clean, scalable digital solutions.";
 
 export const metadata: Metadata = {
   title,
@@ -56,16 +67,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F8FAF7",
+  themeColor: "#FAF9F6",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${archivoBlack.variable} ${spaceGrotesk.variable} ${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#F8FAF7] text-[#17191C]">
+      <body className="min-h-full flex flex-col bg-[#FAF9F6] text-[#171717]">
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

@@ -7,22 +7,14 @@ import { Menu, X } from "lucide-react";
 const NAV_ITEMS = [
   { id: "about", label: "About" },
   { id: "experience", label: "Experience" },
-  { id: "projects", label: "Projects" },
-  { id: "skills", label: "Skills" },
+  { id: "work", label: "Work" },
+  { id: "stack", label: "Stack" },
   { id: "contact", label: "Contact" },
 ] as const;
 
 export default function Navbar() {
   const [active, setActive] = useState<string>("");
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     const sections = NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(
@@ -40,7 +32,7 @@ export default function Navbar() {
           setActive(visible[0].target.id);
         }
       },
-      { rootMargin: "-30% 0px -50% 0px", threshold: [0.1, 0.35, 0.6] }
+      { rootMargin: "-25% 0px -55% 0px", threshold: [0.1, 0.35, 0.6] }
     );
 
     sections.forEach((sec) => observer.observe(sec));
@@ -49,27 +41,19 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-4 inset-x-0 z-50 px-4 sm:px-6 pointer-events-none">
-      <div className="max-w-5xl mx-auto flex flex-col items-center">
+      <div className="max-w-6xl mx-auto flex flex-col items-center">
         <nav
           aria-label="Primary Navigation"
-          className={`pointer-events-auto w-full sm:w-auto flex items-center justify-between gap-3 sm:gap-6 px-3 sm:px-4 py-2 rounded-full glass-dock transition-all duration-300 ${
-            scrolled ? "shadow-[0_16px_40px_-10px_rgba(23,25,28,0.14)]" : ""
-          }`}
+          className="pointer-events-auto w-full md:w-auto flex items-center justify-between gap-3 md:gap-5 px-3 py-2 bg-[#FAF9F6] brutal-box rounded-xl"
         >
-          {/* Monogram FF */}
+          {/* FF Monogram */}
           <a
             href="#top"
             onClick={() => setActive("")}
             aria-label="Fathi Farhat — Back to top"
-            className="flex items-center gap-2.5 pr-1 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#17191C] rounded-full"
+            className="group flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#171717]"
           >
-            <span
-              className="w-9 h-9 rounded-full glossy-sphere flex items-center justify-center font-display font-bold text-xs tracking-tight text-[#17191C] transition-transform duration-300 group-hover:scale-105"
-              style={{
-                background:
-                  "radial-gradient(circle at 30% 28%, #F4FFCC 0%, #D6FF62 55%, #A5E8F5 100%)",
-              }}
-            >
+            <span className="w-10 h-10 bg-[#D7FF45] border-2 border-[#171717] shadow-[2px_2px_0_#171717] rounded-md flex items-center justify-center font-heavy text-sm tracking-tighter text-[#171717] transition-transform duration-150 group-hover:-rotate-6">
               FF
             </span>
           </a>
@@ -82,15 +66,15 @@ export default function Navbar() {
                 <li key={item.id}>
                   <a
                     href={`#${item.id}`}
-                    className={`relative px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#17191C] ${
-                      isActive ? "text-[#17191C] font-semibold" : "text-[#4A515A] hover:text-[#17191C]"
+                    className={`relative px-3.5 py-2 rounded-md font-mono text-xs uppercase tracking-[0.12em] font-bold transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#171717] ${
+                      isActive ? "text-[#171717]" : "text-[#171717]/70 hover:text-[#171717]"
                     }`}
                   >
                     {isActive && (
                       <motion.span
-                        layoutId="navActiveIndicator"
-                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                        className="absolute inset-0 rounded-full bg-[#D6FF62] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] -z-10"
+                        layoutId="navPill"
+                        transition={{ type: "spring", stiffness: 420, damping: 30 }}
+                        className="absolute inset-0 bg-[#D7FF45] border-2 border-[#171717] shadow-[2px_2px_0_#171717] rounded-md -z-10"
                       />
                     )}
                     {item.label}
@@ -100,17 +84,17 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Availability Indicator + Mobile Toggle */}
+          {/* Availability Sticker + Mobile Menu Button */}
           <div className="flex items-center gap-2">
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#17191C] text-[#F8FAF7] text-xs font-medium tracking-tight hover:bg-[#262A30] transition-colors min-h-[36px]"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-[#171717] text-[#FAF9F6] hover:bg-[#526BFF] transition-colors font-mono text-[11px] font-bold uppercase tracking-[0.12em] min-h-[40px]"
             >
               <span className="relative flex h-2 w-2" aria-hidden="true">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D6FF62] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D6FF62]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D7FF45] opacity-80" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D7FF45]" />
               </span>
-              <span>Available</span>
+              <span>AVAIL // JKT</span>
             </a>
 
             <button
@@ -118,41 +102,42 @@ export default function Navbar() {
               onClick={() => setMobileOpen((v) => !v)}
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-              className="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-[#17191C] hover:bg-[#17191C]/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#17191C]"
+              className="md:hidden w-11 h-11 rounded-md border-2 border-[#171717] bg-[#FF91C8] text-[#171717] flex items-center justify-center shadow-[2px_2px_0_#171717] active:translate-x-[1px] active:translate-y-[1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#171717]"
             >
               {mobileOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
           </div>
         </nav>
 
-        {/* Mobile Dropdown Drawer */}
+        {/* Mobile Color-Blocked Drawer */}
         <AnimatePresence>
           {mobileOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.97 }}
-              animate={{ opacity: 1, y: 8, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.97 }}
-              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-auto md:hidden w-full max-w-sm rounded-3xl glass-dock p-3 shadow-2xl"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 10 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-auto md:hidden w-full max-w-sm bg-[#FAF9F6] brutal-box rounded-xl p-3"
             >
-              <ul className="flex flex-col gap-1">
-                {NAV_ITEMS.map((item) => {
+              <ul className="flex flex-col gap-2">
+                {NAV_ITEMS.map((item, idx) => {
                   const isActive = active === item.id;
+                  const colors = ["#D7FF45", "#FF91C8", "#526BFF", "#FF7545", "#D7FF45"];
+                  const activeBg = colors[idx % colors.length];
                   return (
                     <li key={item.id}>
                       <a
                         href={`#${item.id}`}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center justify-between px-4 min-h-[44px] rounded-2xl text-sm font-medium transition-colors ${
+                        style={isActive ? { backgroundColor: activeBg } : undefined}
+                        className={`flex items-center justify-between px-4 min-h-[48px] rounded-md border-2 border-[#171717] font-display font-bold text-base tracking-tight transition-colors ${
                           isActive
-                            ? "bg-[#D6FF62] text-[#17191C] font-semibold"
-                            : "text-[#17191C] hover:bg-[#17191C]/5"
+                            ? "text-[#171717] shadow-[3px_3px_0_#171717]"
+                            : "bg-white text-[#171717] hover:bg-[#D7FF45]"
                         }`}
                       >
                         <span>{item.label}</span>
-                        <span className="text-[11px] font-mono uppercase tracking-widest opacity-50">
-                          0{NAV_ITEMS.indexOf(item) + 1}
-                        </span>
+                        <span className="font-mono text-xs opacity-60">0{idx + 1}</span>
                       </a>
                     </li>
                   );

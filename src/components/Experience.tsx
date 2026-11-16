@@ -2,183 +2,151 @@
 
 import React, { useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { Plus, Minus, ArrowUpRight } from "lucide-react";
-import { Reveal } from "./MotionPrimitives";
+import { Plus, Minus, ArrowRight } from "lucide-react";
+import { Reveal, StickerBadge } from "./MotionPrimitives";
 
-type ExperienceItem = {
-  index: string;
-  yearDisplay: string;
+type RoleEntry = {
+  no: string;
+  dateBig: string;
   period: string;
   role: string;
   company: string;
-  location: string;
-  current: boolean;
-  summary: string;
-  contributions: string[];
+  accentBg: string;
+  accentText: string;
+  current?: boolean;
+  highlights: string[];
   stack: string[];
-  variant: "light" | "dark";
 };
 
-const EXPERIENCES: ExperienceItem[] = [
+const ROLES: RoleEntry[] = [
   {
-    index: "01",
-    yearDisplay: "2025 — NOW",
+    no: "01",
+    dateBig: "2025—NOW",
     period: "November 2025 — Present",
     role: "Fullstack Developer",
     company: "PT CSM Corporatama (Indomobil Group)",
-    location: "Jakarta, Indonesia",
+    accentBg: "#D7FF45",
+    accentText: "#171717",
     current: true,
-    summary:
-      "Architecting and shipping enterprise-scale internal platforms, approval workflows, and BI reporting systems.",
-    contributions: [
-      "Built Car Rental Management System (CRMS) serving 1,000+ users.",
-      "Developed HRIS for employee administration and attendance.",
-      "Designed CRMS Business Intelligence reporting system processing 10,000+ records.",
-      "Built internal company portal for centralized document management.",
-      "Used Go, GoFiber, ASP.NET, Next.js, Vite, SQL Server, Redis, and MySQL.",
+    highlights: [
+      "Built CRMS serving 1,000+ users.",
+      "Developed an HRIS platform.",
+      "Built BI reporting processing 10,000+ records.",
+      "Developed an internal company portal.",
+      "Worked with Go, GoFiber, ASP.NET, Next.js, Vite, SQL Server, Redis, and MySQL.",
     ],
     stack: ["Go", "GoFiber", "ASP.NET", "Next.js", "Vite", "SQL Server", "Redis", "MySQL"],
-    variant: "light",
   },
   {
-    index: "02",
-    yearDisplay: "2022 — 2025",
+    no: "02",
+    dateBig: "2022—2025",
     period: "December 2022 — November 2025",
     role: "Backend Developer",
     company: "Aidi Digital Global",
-    location: "Tangerang / BSD",
-    current: false,
-    summary:
-      "Engineered core backend services, RESTful APIs, and fullstack web products across multiple digital platforms.",
-    contributions: [
-      "Developed and maintained backend systems using JavaScript, Go, and Node.js.",
-      "Designed RESTful APIs for newsletter, invoice, and vendor management.",
+    accentBg: "#526BFF",
+    accentText: "#FAF9F6",
+    highlights: [
+      "Built backend systems using Go, JavaScript, and Node.js.",
+      "Developed RESTful APIs.",
       "Built webset.id using React, Next.js, and MongoDB.",
-      "Implemented newsletter analytics for views and link clicks.",
-      "Developed custom Twibbon functionality for klip.id.",
-      "Managed MongoDB and MySQL databases.",
+      "Implemented newsletter analytics.",
+      "Developed custom Twibbon features.",
+      "Optimized MongoDB and MySQL databases.",
     ],
-    stack: ["JavaScript", "Go", "Node.js", "React", "Next.js", "MongoDB", "MySQL"],
-    variant: "dark",
+    stack: ["Go", "JavaScript", "Node.js", "React", "Next.js", "MongoDB", "MySQL"],
   },
 ];
 
-function TimelineRow({ item, idx }: { item: ExperienceItem; idx: number }) {
-  const [expanded, setExpanded] = useState(true);
-  const isDark = item.variant === "dark";
+function ExperienceItem({ item, idx }: { item: RoleEntry; idx: number }) {
+  const [open, setOpen] = useState(true);
 
   return (
     <Reveal delay={idx * 0.08} className="relative grid lg:grid-cols-12 gap-6 lg:gap-10 items-start">
-      {/* Left: Large Date Typography */}
+      {/* Left: Oversized Date Label + Colorful Marker */}
       <div className="lg:col-span-4 lg:sticky lg:top-28">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="font-mono text-xs uppercase tracking-[0.18em] text-[#4A515A]">
-            Role {item.index}
+        <div className="flex items-center gap-2.5 mb-2">
+          <span
+            style={{ backgroundColor: item.accentBg, color: item.accentText }}
+            className="px-2.5 py-0.5 border-2 border-[#171717] font-mono text-xs font-bold uppercase tracking-wider rounded-sm"
+          >
+            EXP // {item.no}
           </span>
           {item.current && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D6FF62] text-[#17191C] text-[11px] font-mono font-semibold uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#17191C]" />
-              Current
+            <span className="px-2.5 py-0.5 bg-[#171717] text-[#D7FF45] font-mono text-[11px] font-bold uppercase tracking-wider rounded-sm">
+              ACTIVE
             </span>
           )}
         </div>
-        <p className="font-display text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-[-0.04em] text-[#17191C] leading-none">
-          {item.yearDisplay}
+
+        <p className="font-heavy text-4xl sm:text-5xl lg:text-[3.25rem] tracking-[-0.04em] leading-none text-[#171717]">
+          {item.dateBig}
         </p>
-        <p className="mt-2 text-xs font-mono uppercase tracking-[0.14em] text-[#4A515A]">
+        <p className="mt-2 font-mono text-xs font-bold uppercase tracking-[0.12em] text-[#171717]/70">
           {item.period}
         </p>
       </div>
 
-      {/* Right: Distinct Visual Treatment Panel */}
+      {/* Right: Neo-Brutalist Expandable Card */}
       <div className="lg:col-span-8">
-        <div
-          className={`rounded-[2rem] transition-all duration-300 overflow-hidden ${
-            isDark
-              ? "bg-[#17191C] text-[#F8FAF7] shadow-[0_28px_56px_-18px_rgba(23,25,28,0.28)]"
-              : "bg-white text-[#17191C] border border-[#17191C]/10 shadow-[0_24px_48px_-16px_rgba(23,25,28,0.08)]"
-          }`}
-        >
+        <div className="bg-[#FAF9F6] brutal-box-lg rounded-2xl overflow-hidden transition-transform duration-200 hover:-translate-y-0.5">
           <button
             type="button"
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-            className="w-full text-left p-6 sm:p-9 flex items-start justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D6FF62]"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            className="w-full text-left p-6 sm:p-8 flex items-start justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#171717]"
           >
             <div>
-              <p
-                className={`text-xs font-mono uppercase tracking-[0.15em] ${
-                  isDark ? "text-[#A5E8F5]" : "text-[#4A515A]"
-                }`}
-              >
-                {item.company} &bull; {item.location}
+              <p className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#526BFF]">
+                {item.company}
               </p>
-              <h3 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight">
+              <h3 className="mt-1.5 font-display text-2xl sm:text-3xl font-bold text-[#171717] tracking-tight">
                 {item.role}
               </h3>
-              <p
-                className={`mt-3 text-sm sm:text-[15px] leading-relaxed max-w-2xl ${
-                  isDark ? "text-[#F8FAF7]/75" : "text-[#4A515A]"
-                }`}
-              >
-                {item.summary}
-              </p>
             </div>
 
             <span
               aria-hidden="true"
-              className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                isDark
-                  ? "bg-white/10 text-[#D6FF62] hover:bg-white/15"
-                  : "bg-[#EFF4EE] text-[#17191C] hover:bg-[#D6FF62]"
-              }`}
+              style={{ backgroundColor: item.accentBg, color: item.accentText }}
+              className="shrink-0 w-10 h-10 rounded-lg border-2 border-[#171717] shadow-[2px_2px_0_#171717] flex items-center justify-center"
             >
-              {expanded ? <Minus size={17} /> : <Plus size={17} />}
+              {open ? <Minus size={18} strokeWidth={2.5} /> : <Plus size={18} strokeWidth={2.5} />}
             </span>
           </button>
 
           <AnimatePresence initial={false}>
-            {expanded && (
+            {open && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden"
               >
-                <div className="px-6 sm:px-9 pb-8 pt-0">
-                  <div
-                    className={`h-px mb-6 ${isDark ? "bg-white/12" : "bg-[#17191C]/10"}`}
-                  />
+                <div className="px-6 sm:px-8 pb-7 pt-0">
+                  <div className="h-[2px] bg-[#171717] mb-6" />
+
                   <ul className="space-y-3">
-                    {item.contributions.map((point) => (
+                    {item.highlights.map((point) => (
                       <li
                         key={point}
-                        className={`flex items-start gap-3 text-[15px] leading-relaxed ${
-                          isDark ? "text-[#F8FAF7]/90" : "text-[#17191C]/85"
-                        }`}
+                        className="flex items-start gap-3 text-[15px] sm:text-base text-[#171717]/90 font-medium leading-relaxed"
                       >
-                        <ArrowUpRight
-                          size={15}
+                        <ArrowRight
+                          size={16}
+                          strokeWidth={2.5}
                           aria-hidden="true"
-                          className={`mt-1 shrink-0 ${
-                            isDark ? "text-[#D6FF62]" : "text-[#17191C]"
-                          }`}
+                          className="mt-1 shrink-0 text-[#FF7545]"
                         />
                         <span>{point}</span>
                       </li>
                     ))}
                   </ul>
 
-                  <div className="mt-7 flex flex-wrap gap-2">
+                  <div className="mt-6 flex flex-wrap gap-2">
                     {item.stack.map((tech) => (
                       <span
                         key={tech}
-                        className={`px-3 py-1 rounded-full text-xs font-mono font-medium ${
-                          isDark
-                            ? "bg-white/10 text-[#F8FAF7] border border-white/10"
-                            : "bg-[#EFF4EE] text-[#17191C] border border-[#17191C]/8"
-                        }`}
+                        className="px-3 py-1 bg-white border-2 border-[#171717] rounded-md font-mono text-xs font-bold text-[#171717]"
                       >
                         {tech}
                       </span>
@@ -195,10 +163,10 @@ function TimelineRow({ item, idx }: { item: ExperienceItem; idx: number }) {
 }
 
 export default function Experience() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const prefersReduced = useReducedMotion();
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: sectionRef,
     offset: ["start 75%", "end 70%"],
   });
   const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
@@ -206,45 +174,43 @@ export default function Experience() {
   return (
     <section
       id="experience"
-      ref={containerRef}
-      className="relative py-24 sm:py-32 bg-[#EFF4EE] bg-editorial-dots border-t border-[#17191C]/8"
+      ref={sectionRef}
+      className="relative py-24 sm:py-32 bg-[#FF91C8]/25 bg-swiss-grid border-b-[2.5px] border-[#171717]"
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        {/* Header */}
-        <Reveal className="grid lg:grid-cols-12 gap-6 items-end mb-16 lg:mb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        <Reveal clip className="grid lg:grid-cols-12 gap-6 items-end mb-16 lg:mb-20">
           <div className="lg:col-span-4">
-            <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-[#4A515A]">
-              <span className="w-2 h-2 rounded-full bg-[#83CFFF] ring-2 ring-[#17191C]/15" />
-              02 / Career Timeline
-            </span>
+            <StickerBadge bg="#526BFF" textColor="#FAF9F6" rotate={1}>
+              02 // EXPERIENCE
+            </StickerBadge>
           </div>
-          <div className="lg:col-span-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.035em] text-[#17191C] leading-[1.03]">
-              Where I&apos;ve built.
+          <div className="lg:col-span-8">
+            <h2 className="font-heavy text-4xl sm:text-5xl lg:text-[4.25rem] leading-[0.95] tracking-[-0.04em] text-[#171717] lowercase">
+              where i&apos;ve been{" "}
+              <span className="italic underline decoration-[#526BFF] decoration-[5px] underline-offset-4">
+                building.
+              </span>
             </h2>
-            <p className="text-sm font-mono text-[#4A515A]">
-              2022 &mdash; Present
-            </p>
           </div>
         </Reveal>
 
-        {/* Timeline with Scroll Progress Accent */}
         <div className="relative">
+          {/* Vertical Scroll Progress Track */}
           <div
             aria-hidden="true"
-            className="hidden lg:block absolute left-[31.5%] top-2 bottom-2 w-px bg-[#17191C]/10"
+            className="hidden lg:block absolute left-[31.8%] top-2 bottom-2 w-[3px] bg-[#171717]/15"
           >
             {!prefersReduced && (
               <motion.div
                 style={{ scaleY, transformOrigin: "top" }}
-                className="w-full h-full bg-gradient-to-b from-[#D6FF62] via-[#83CFFF] to-[#C9B8FF]"
+                className="w-full h-full bg-[#171717]"
               />
             )}
           </div>
 
           <div className="space-y-12 lg:space-y-16">
-            {EXPERIENCES.map((item, idx) => (
-              <TimelineRow key={item.index} item={item} idx={idx} />
+            {ROLES.map((item, idx) => (
+              <ExperienceItem key={item.no} item={item} idx={idx} />
             ))}
           </div>
         </div>

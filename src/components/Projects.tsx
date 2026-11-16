@@ -3,104 +3,87 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowUpRight, Maximize2, X, Layers, Check } from "lucide-react";
-import { Reveal, GlossyBubble, type BubbleTone } from "./MotionPrimitives";
+import { ArrowUpRight, Maximize2, X, Check } from "lucide-react";
+import { Reveal, StickerBadge } from "./MotionPrimitives";
 
-type ProjectItem = {
+type ProjectData = {
   no: string;
   name: string;
-  subtitle?: string;
   category: string;
   description: string;
-  highlights: string[];
-  meta?: { role?: string; year?: string };
+  items: string[];
+  role?: string;
   href?: string;
   images: { src: string; alt: string; label: string }[];
-  tone: BubbleTone;
 };
 
-const PROJECTS: ProjectItem[] = [
+const PROJECTS: ProjectData[] = [
   {
     no: "01",
     name: "flowgo.id",
-    category: "SaaS / Workflow Automation",
+    category: "SAAS / WORKFLOW AUTOMATION",
     description:
       "A No-Code Workflow Automation platform that enables teams to create custom workflows without coding.",
-    highlights: [
+    items: [
       "Dynamic forms",
       "Multi-step approval flows",
       "Real-time workflow tracking",
       "Customizable business processes",
     ],
-    meta: {
-      role: "Founder & Fullstack Developer",
-      year: "2026 — Present",
-    },
+    role: "Founder & Fullstack Developer",
     href: "https://flowgo.id",
     images: [
       {
         src: "/projects/flowgo-workflows.png",
-        alt: "flowgo.id workflow builder workspace showing configurable multi-step flows",
+        alt: "flowgo.id workflow automation builder view",
         label: "Workflows",
       },
       {
         src: "/projects/flowgo-landing.png",
-        alt: "flowgo.id product landing page",
-        label: "Overview",
+        alt: "flowgo.id landing overview",
+        label: "Landing",
       },
     ],
-    tone: "lime",
   },
   {
     no: "02",
     name: "CRMS",
-    subtitle: "Car Rental Management System",
-    category: "Enterprise Application",
-    description:
-      "A centralized car rental management system designed to support enterprise-scale operations and approval workflows.",
-    highlights: ["1,000+ users", "Approval workflow", "Go / GoFiber", "Next.js", "SQL Server"],
+    category: "ENTERPRISE SOFTWARE",
+    description: "A centralized car rental management system serving 1,000+ users.",
+    items: ["Go", "GoFiber", "Next.js", "SQL Server"],
     images: [
       {
         src: "/projects/crms-dashboard.png",
-        alt: "CRMS enterprise dashboard with fleet and approval navigation",
+        alt: "CRMS enterprise dashboard interface",
         label: "Dashboard",
       },
     ],
-    tone: "aqua",
   },
   {
     no: "03",
-    name: "CRMS Business Intelligence",
-    category: "Business Intelligence",
-    description:
-      "An automated reporting platform that transforms operational data into actionable management insights.",
-    highlights: [
-      "10,000+ records",
-      "Automated reporting",
-      "ASP.NET",
-      "Redis",
-      "SQL Server",
-    ],
+    name: "CRMS BI",
+    category: "BUSINESS INTELLIGENCE",
+    description: "An automated reporting platform processing 10,000+ records.",
+    items: ["ASP.NET", "Vite", "SQL Server", "Redis"],
     images: [
       {
         src: "/projects/crms-bi-monitoring.png",
-        alt: "CRMS Business Intelligence monitoring dashboard with KPI metrics",
+        alt: "CRMS BI monitoring and KPI dashboard",
         label: "Monitoring",
       },
       {
         src: "/projects/crms-bi-assistant.png",
-        alt: "CRMS Business Intelligence reporting assistant view",
+        alt: "CRMS BI automated reporting assistant",
         label: "Assistant",
       },
     ],
-    tone: "lavender",
   },
   {
     no: "04",
     name: "webset.id",
-    category: "Domain Platform",
-    description: "A domain-selling platform built with modern fullstack technologies.",
-    highlights: ["Domain purchasing", "RESTful APIs", "Next.js", "React", "MongoDB"],
+    category: "DOMAIN PLATFORM",
+    description: "A domain-selling platform built with React, Next.js, and MongoDB.",
+    items: ["React", "Next.js", "MongoDB"],
     href: "https://webset.id",
     images: [
       {
@@ -109,49 +92,44 @@ const PROJECTS: ProjectItem[] = [
         label: "Platform",
       },
     ],
-    tone: "pink",
   },
 ];
 
-function InteractivePreview({
+function ScreenshotStage({
   project,
-  aspectClass = "aspect-[16/10]",
+  aspect = "aspect-[16/10]",
   onInspect,
 }: {
-  project: ProjectItem;
-  aspectClass?: string;
+  project: ProjectData;
+  aspect?: string;
   onInspect: () => void;
 }) {
-  const [imgIdx, setImgIdx] = useState(0);
+  const [idx, setIdx] = useState(0);
   const prefersReduced = useReducedMotion();
-  const currentImg = project.images[imgIdx] ?? project.images[0];
+  const img = project.images[idx] ?? project.images[0];
 
   return (
     <div className="space-y-3">
       <motion.div
         whileHover={prefersReduced ? undefined : { y: -4 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="group relative rounded-[1.75rem] overflow-hidden border border-[#17191C]/12 bg-[#17191C] shadow-[0_24px_48px_-16px_rgba(23,25,28,0.18)]"
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        className="group relative bg-[#171717] border-[2.5px] border-[#171717] shadow-[6px_6px_0_#171717] rounded-2xl overflow-hidden"
       >
-        <div className={`relative w-full ${aspectClass} overflow-hidden`}>
+        <div className={`relative w-full ${aspect} overflow-hidden`}>
           <Image
-            src={currentImg.src}
-            alt={currentImg.alt}
+            src={img.src}
+            alt={img.alt}
             fill
-            sizes="(max-width: 1024px) 95vw, 680px"
-            className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-[#17191C]/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            sizes="(max-width: 1024px) 94vw, 680px"
+            className="object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
         </div>
 
         <button
           type="button"
           onClick={onInspect}
-          aria-label={`Inspect ${project.name} details`}
-          className="absolute bottom-4 right-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-full glass-dock text-[#17191C] text-xs font-display font-bold tracking-tight shadow-lg transition-transform duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D6FF62]"
+          aria-label={`Inspect ${project.name} screenshots`}
+          className="brutal-btn absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#D7FF45] text-[#171717] font-mono text-xs font-bold uppercase tracking-wider min-h-[40px]"
         >
           <Maximize2 size={13} aria-hidden="true" />
           <span>Inspect</span>
@@ -159,19 +137,19 @@ function InteractivePreview({
       </motion.div>
 
       {project.images.length > 1 && (
-        <div className="flex items-center gap-2">
-          {project.images.map((img, i) => (
+        <div className="flex flex-wrap gap-2">
+          {project.images.map((item, i) => (
             <button
-              key={img.src}
+              key={item.src}
               type="button"
-              onClick={() => setImgIdx(i)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all min-h-[34px] ${
-                i === imgIdx
-                  ? "bg-[#17191C] text-[#F8FAF7] font-semibold"
-                  : "bg-[#17191C]/6 text-[#4A515A] hover:text-[#17191C]"
+              onClick={() => setIdx(i)}
+              className={`px-3.5 py-1.5 rounded-md border-2 border-[#171717] font-mono text-xs font-bold uppercase tracking-wider transition-colors min-h-[36px] ${
+                i === idx
+                  ? "bg-[#171717] text-[#D7FF45]"
+                  : "bg-[#FAF9F6] text-[#171717] hover:bg-[#D7FF45]"
               }`}
             >
-              {img.label}
+              {item.label}
             </button>
           ))}
         </div>
@@ -181,7 +159,7 @@ function InteractivePreview({
 }
 
 export default function Projects() {
-  const [selected, setSelected] = useState<ProjectItem | null>(null);
+  const [selected, setSelected] = useState<ProjectData | null>(null);
 
   useEffect(() => {
     if (!selected) return;
@@ -192,106 +170,95 @@ export default function Projects() {
     return () => window.removeEventListener("keydown", onKey);
   }, [selected]);
 
-  const p1 = PROJECTS[0];
-  const p2 = PROJECTS[1];
-  const p3 = PROJECTS[2];
-  const p4 = PROJECTS[3];
+  const [p1, p2, p3, p4] = PROJECTS;
 
   return (
     <section
-      id="projects"
-      className="relative py-24 sm:py-32 bg-[#F8FAF7] border-t border-[#17191C]/8 overflow-hidden"
+      id="work"
+      className="py-24 sm:py-32 bg-[#FAF9F6] border-b-[2.5px] border-[#171717] overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* Section Header */}
-        <Reveal className="grid lg:grid-cols-12 gap-6 items-end mb-16 lg:mb-24">
+        <Reveal clip className="grid lg:grid-cols-12 gap-6 items-end mb-16 lg:mb-20">
           <div className="lg:col-span-4">
-            <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-[#4A515A]">
-              <span className="w-2 h-2 rounded-full bg-[#C9B8FF] ring-2 ring-[#17191C]/15" />
-              03 / Featured Projects
-            </span>
+            <StickerBadge bg="#FF7545" rotate={-2}>
+              03 // SELECTED WORK
+            </StickerBadge>
           </div>
           <div className="lg:col-span-8">
-            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.035em] text-[#17191C] leading-[1.03]">
-              Selected products &amp; systems.
+            <h2 className="font-heavy text-4xl sm:text-5xl lg:text-[4.25rem] leading-[0.95] tracking-[-0.04em] text-[#171717] lowercase">
+              stuff i&apos;ve{" "}
+              <span className="inline-block bg-[#D7FF45] px-3 py-0.5 border-2 border-[#171717] shadow-[4px_4px_0_#171717] rounded-lg">
+                shipped.
+              </span>
             </h2>
           </div>
         </Reveal>
 
-        <div className="space-y-16 lg:space-y-24">
-          {/* PROJECT 01 — Full-width Hero Product Showcase (flowgo.id) */}
+        <div className="space-y-14 lg:space-y-20">
+          {/* PROJECT 01 — Electric Lime & Deep Black Editorial Spread */}
           <Reveal>
-            <article className="relative rounded-[2.5rem] p-6 sm:p-10 lg:p-12 bg-gradient-to-br from-[#EFF9E8] via-[#F8FAF7] to-[#E6F8FC] border border-[#17191C]/10 shadow-[0_28px_60px_-20px_rgba(23,25,28,0.1)] overflow-hidden">
-              <GlossyBubble
-                tone="lime"
-                interactive={false}
-                floatDuration={9}
-                className="hidden lg:block absolute -top-12 -right-12 w-44 h-44 opacity-80 pointer-events-none"
-              />
-              <div className="relative grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <article className="bg-[#D7FF45] text-[#171717] brutal-box-lg rounded-[1.75rem] p-6 sm:p-10 lg:p-12">
+              <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
                 <div className="lg:col-span-5 space-y-5">
                   <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="font-mono text-xs font-semibold px-3 py-1 rounded-full bg-[#17191C] text-[#D6FF62]">
+                    <span className="px-2.5 py-1 bg-[#171717] text-[#D7FF45] font-mono text-xs font-bold rounded-sm">
                       {p1.no}
                     </span>
-                    <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#4A515A]">
+                    <span className="font-mono text-xs font-bold uppercase tracking-[0.14em]">
                       {p1.category}
                     </span>
                   </div>
 
-                  <h3 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#17191C]">
+                  <h3 className="font-heavy text-4xl sm:text-5xl tracking-tight leading-none">
                     {p1.name}
                   </h3>
 
-                  <p className="text-base sm:text-[17px] text-[#4A515A] leading-relaxed">
+                  {p1.role && (
+                    <p className="inline-block px-3 py-1 bg-[#FAF9F6] border-2 border-[#171717] rounded-md font-mono text-xs font-bold uppercase tracking-wider">
+                      Role: {p1.role}
+                    </p>
+                  )}
+
+                  <p className="text-base sm:text-lg font-medium leading-relaxed">
                     {p1.description}
                   </p>
 
-                  {p1.meta && (
-                    <div className="flex flex-wrap gap-x-6 gap-y-2 pt-1 text-xs font-mono text-[#17191C]">
-                      <span>Role: {p1.meta.role}</span>
-                      <span>Year: {p1.meta.year}</span>
-                    </div>
-                  )}
-
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
-                    {p1.highlights.map((h) => (
-                      <li
-                        key={h}
-                        className="flex items-center gap-2 text-sm font-medium text-[#17191C]"
-                      >
-                        <Check size={14} aria-hidden="true" className="text-[#17191C] shrink-0" />
-                        <span>{h}</span>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    {p1.items.map((feat) => (
+                      <li key={feat} className="flex items-center gap-2 text-sm font-bold">
+                        <Check size={15} strokeWidth={3} aria-hidden="true" className="shrink-0" />
+                        <span>{feat}</span>
                       </li>
                     ))}
                   </ul>
 
-                  <div className="pt-3 flex flex-wrap items-center gap-3">
+                  <div className="pt-3 flex flex-wrap gap-3">
                     {p1.href && (
                       <a
                         href={p1.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-full glossy-pill-lime text-[#17191C] font-display font-bold text-sm min-h-[44px]"
+                        className="brutal-btn inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#171717] text-[#FAF9F6] hover:bg-[#526BFF] font-display font-bold text-sm min-h-[46px]"
                       >
-                        Visit flowgo.id
+                        <span>visit flowgo.id</span>
                         <ArrowUpRight size={16} aria-hidden="true" />
                       </a>
                     )}
                     <button
                       type="button"
                       onClick={() => setSelected(p1)}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-[#17191C]/15 bg-white/70 hover:bg-white text-[#17191C] font-semibold text-sm transition-colors min-h-[44px]"
+                      className="brutal-btn inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#FAF9F6] text-[#171717] font-display font-bold text-sm min-h-[46px]"
                     >
-                      Project Details
+                      <span>case details</span>
                     </button>
                   </div>
                 </div>
 
                 <div className="lg:col-span-7">
-                  <InteractivePreview
+                  <ScreenshotStage
                     project={p1}
-                    aspectClass="aspect-[16/10]"
+                    aspect="aspect-[16/10]"
                     onInspect={() => setSelected(p1)}
                   />
                 </div>
@@ -299,46 +266,43 @@ export default function Projects() {
             </article>
           </Reveal>
 
-          {/* PROJECT 02 — Deep Ink Contrast Split (CRMS) */}
+          {/* PROJECT 02 — Cobalt Blue Asymmetric Block */}
           <Reveal>
-            <article className="relative rounded-[2.5rem] p-6 sm:p-10 lg:p-12 bg-[#17191C] text-[#F8FAF7] shadow-[0_32px_64px_-20px_rgba(23,25,28,0.3)] overflow-hidden">
-              <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <article className="bg-[#526BFF] text-[#FAF9F6] brutal-box-lg rounded-[1.75rem] p-6 sm:p-10 lg:p-12">
+              <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
                 <div className="lg:col-span-7 order-2 lg:order-1">
-                  <InteractivePreview
+                  <ScreenshotStage
                     project={p2}
-                    aspectClass="aspect-[16/10.5]"
+                    aspect="aspect-[16/10.5]"
                     onInspect={() => setSelected(p2)}
                   />
                 </div>
 
                 <div className="lg:col-span-5 order-1 lg:order-2 space-y-5">
                   <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="font-mono text-xs font-semibold px-3 py-1 rounded-full bg-[#A5E8F5] text-[#17191C]">
+                    <span className="px-2.5 py-1 bg-[#D7FF45] text-[#171717] border-2 border-[#171717] font-mono text-xs font-bold rounded-sm">
                       {p2.no}
                     </span>
-                    <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#A5E8F5]">
+                    <span className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#D7FF45]">
                       {p2.category}
                     </span>
                   </div>
 
-                  <div>
-                    <h3 className="font-display text-3xl sm:text-4xl font-bold tracking-tight">
-                      {p2.name}
-                    </h3>
-                    {p2.subtitle && (
-                      <p className="mt-1 text-sm font-mono text-[#F8FAF7]/65">{p2.subtitle}</p>
-                    )}
-                  </div>
+                  <h3 className="font-heavy text-4xl sm:text-5xl tracking-tight leading-none">
+                    {p2.name}
+                  </h3>
 
-                  <p className="text-base text-[#F8FAF7]/80 leading-relaxed">{p2.description}</p>
+                  <p className="text-base sm:text-lg text-[#FAF9F6]/90 font-medium leading-relaxed">
+                    {p2.description}
+                  </p>
 
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    {p2.highlights.map((h) => (
+                  <div className="flex flex-wrap gap-2">
+                    {p2.items.map((tech) => (
                       <span
-                        key={h}
-                        className="px-3.5 py-1.5 rounded-full bg-white/10 border border-white/10 text-xs font-mono text-[#F8FAF7]"
+                        key={tech}
+                        className="px-3 py-1 bg-[#FAF9F6] text-[#171717] border-2 border-[#171717] rounded-md font-mono text-xs font-bold"
                       >
-                        {h}
+                        {tech}
                       </span>
                     ))}
                   </div>
@@ -347,10 +311,10 @@ export default function Projects() {
                     <button
                       type="button"
                       onClick={() => setSelected(p2)}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-[#F8FAF7] text-[#17191C] hover:bg-[#D6FF62] font-display font-bold text-sm transition-colors min-h-[44px]"
+                      className="brutal-btn inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#D7FF45] text-[#171717] font-display font-bold text-sm min-h-[46px]"
                     >
-                      Explore Architecture
-                      <ArrowUpRight size={15} aria-hidden="true" />
+                      <span>inspect crms</span>
+                      <ArrowUpRight size={16} aria-hidden="true" />
                     </button>
                   </div>
                 </div>
@@ -358,68 +322,66 @@ export default function Projects() {
             </article>
           </Reveal>
 
-          {/* PROJECT 03 & 04 — Asymmetrical Editorial Pairing (Different sizes & ratios) */}
+          {/* PROJECT 03 & 04 — Asymmetric Magazine Pair */}
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-            {/* Project 03: CRMS Business Intelligence (7 cols) */}
+            {/* Project 03 — Vivid Orange (7 cols) */}
             <Reveal className="lg:col-span-7 flex">
-              <article className="w-full rounded-[2.25rem] p-6 sm:p-9 bg-gradient-to-br from-[#F3EFFF] via-[#F8FAF7] to-[#E8FAF3] border border-[#17191C]/10 flex flex-col justify-between gap-7">
+              <article className="w-full bg-[#FF7545] text-[#171717] brutal-box-lg rounded-[1.75rem] p-6 sm:p-9 flex flex-col justify-between gap-7">
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5">
-                      <span className="font-mono text-xs font-semibold px-3 py-1 rounded-full bg-[#C9B8FF] text-[#17191C]">
+                      <span className="px-2.5 py-1 bg-[#171717] text-[#FAF9F6] font-mono text-xs font-bold rounded-sm">
                         {p3.no}
                       </span>
-                      <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#4A515A]">
+                      <span className="font-mono text-xs font-bold uppercase tracking-[0.14em]">
                         {p3.category}
                       </span>
                     </div>
-                    <span className="px-3 py-1 rounded-full bg-white/80 border border-[#17191C]/10 text-xs font-mono font-semibold text-[#17191C]">
-                      10,000+ records
-                    </span>
+                    <StickerBadge bg="#FAF9F6" rotate={1}>
+                      10,000+ RECORDS
+                    </StickerBadge>
                   </div>
 
-                  <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#17191C]">
+                  <h3 className="font-heavy text-3xl sm:text-4xl tracking-tight leading-none">
                     {p3.name}
                   </h3>
-                  <p className="text-[15px] sm:text-base text-[#4A515A] leading-relaxed">
-                    {p3.description}
-                  </p>
+                  <p className="text-base font-medium leading-relaxed">{p3.description}</p>
 
                   <div className="flex flex-wrap gap-2">
-                    {p3.highlights.map((h) => (
+                    {p3.items.map((tech) => (
                       <span
-                        key={h}
-                        className="px-3 py-1 rounded-full bg-white/80 border border-[#17191C]/8 text-xs font-mono text-[#17191C]"
+                        key={tech}
+                        className="px-3 py-1 bg-[#FAF9F6] border-2 border-[#171717] rounded-md font-mono text-xs font-bold"
                       >
-                        {h}
+                        {tech}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <InteractivePreview
+                <ScreenshotStage
                   project={p3}
-                  aspectClass="aspect-[16/10]"
+                  aspect="aspect-[16/10]"
                   onInspect={() => setSelected(p3)}
                 />
               </article>
             </Reveal>
 
-            {/* Project 04: webset.id (5 cols, taller editorial frame) */}
+            {/* Project 04 — Bubblegum Pink (5 cols) */}
             <Reveal delay={0.08} className="lg:col-span-5 flex">
-              <article className="w-full rounded-[2.25rem] p-6 sm:p-9 bg-gradient-to-b from-[#FFF0F6] via-[#F8FAF7] to-[#E9F6FF] border border-[#17191C]/10 flex flex-col justify-between gap-7">
+              <article className="w-full bg-[#FF91C8] text-[#171717] brutal-box-lg rounded-[1.75rem] p-6 sm:p-9 flex flex-col justify-between gap-7">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-mono text-xs font-semibold px-3 py-1 rounded-full bg-[#FFB8D5] text-[#17191C]">
+                    <span className="px-2.5 py-1 bg-[#171717] text-[#FAF9F6] font-mono text-xs font-bold rounded-sm">
                       {p4.no}
                     </span>
-                    <span className="text-xs font-mono uppercase tracking-[0.14em] text-[#4A515A]">
+                    <span className="font-mono text-xs font-bold uppercase tracking-[0.14em]">
                       {p4.category}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between gap-3">
-                    <h3 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[#17191C]">
+                    <h3 className="font-heavy text-3xl sm:text-4xl tracking-tight leading-none">
                       {p4.name}
                     </h3>
                     {p4.href && (
@@ -428,32 +390,30 @@ export default function Projects() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Visit webset.id"
-                        className="w-10 h-10 rounded-full bg-[#17191C] text-[#F8FAF7] hover:bg-[#D6FF62] hover:text-[#17191C] flex items-center justify-center transition-colors shrink-0"
+                        className="brutal-btn w-11 h-11 rounded-lg bg-[#D7FF45] flex items-center justify-center shrink-0"
                       >
-                        <ArrowUpRight size={17} aria-hidden="true" />
+                        <ArrowUpRight size={18} strokeWidth={2.5} aria-hidden="true" />
                       </a>
                     )}
                   </div>
 
-                  <p className="text-[15px] sm:text-base text-[#4A515A] leading-relaxed">
-                    {p4.description}
-                  </p>
+                  <p className="text-base font-medium leading-relaxed">{p4.description}</p>
 
                   <div className="flex flex-wrap gap-2">
-                    {p4.highlights.map((h) => (
+                    {p4.items.map((tech) => (
                       <span
-                        key={h}
-                        className="px-3 py-1 rounded-full bg-white/80 border border-[#17191C]/8 text-xs font-mono text-[#17191C]"
+                        key={tech}
+                        className="px-3 py-1 bg-[#FAF9F6] border-2 border-[#171717] rounded-md font-mono text-xs font-bold"
                       >
-                        {h}
+                        {tech}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <InteractivePreview
+                <ScreenshotStage
                   project={p4}
-                  aspectClass="aspect-[4/3]"
+                  aspect="aspect-[4/3]"
                   onInspect={() => setSelected(p4)}
                 />
               </article>
@@ -462,62 +422,60 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* Interactive Project Inspection Modal */}
+      {/* Case Study Modal */}
       <AnimatePresence>
         {selected && (
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-labelledby="project-modal-title"
+            aria-labelledby="project-dialog-title"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelected(null)}
-            className="fixed inset-0 z-50 bg-[#17191C]/70 backdrop-blur-md p-4 sm:p-6 flex items-center justify-center"
+            className="fixed inset-0 z-50 bg-[#171717]/80 backdrop-blur-sm p-4 sm:p-6 flex items-center justify-center"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              initial={{ opacity: 0, scale: 0.95, y: 14 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, scale: 0.95, y: 14 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[2rem] bg-[#F8FAF7] text-[#17191C] p-6 sm:p-8 shadow-2xl border border-white"
+              className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[#FAF9F6] text-[#171717] brutal-box-lg rounded-2xl p-6 sm:p-8"
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <span className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-[0.15em] text-[#4A515A]">
-                    <Layers size={13} aria-hidden="true" />
-                    {selected.no} &bull; {selected.category}
+                  <span className="font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#526BFF]">
+                    {selected.no} {"//"} {selected.category}
                   </span>
                   <h3
-                    id="project-modal-title"
-                    className="mt-1 font-display text-2xl sm:text-3xl font-bold tracking-tight"
+                    id="project-dialog-title"
+                    className="mt-1 font-heavy text-3xl sm:text-4xl tracking-tight"
                   >
                     {selected.name}
-                    {selected.subtitle ? ` — ${selected.subtitle}` : ""}
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelected(null)}
-                  aria-label="Close project details"
-                  className="w-10 h-10 rounded-full bg-[#17191C]/8 hover:bg-[#17191C] hover:text-[#F8FAF7] flex items-center justify-center transition-colors shrink-0"
+                  aria-label="Close project modal"
+                  className="brutal-btn w-10 h-10 rounded-lg bg-[#FF91C8] flex items-center justify-center shrink-0"
                 >
-                  <X size={18} />
+                  <X size={18} strokeWidth={2.5} />
                 </button>
               </div>
 
-              <p className="mt-4 text-base text-[#4A515A] leading-relaxed">
+              <p className="mt-4 text-base font-medium text-[#171717]/85 leading-relaxed">
                 {selected.description}
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                {selected.highlights.map((h) => (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {selected.items.map((item) => (
                   <span
-                    key={h}
-                    className="px-3.5 py-1.5 rounded-full bg-[#EFF4EE] border border-[#17191C]/10 text-xs font-mono font-medium text-[#17191C]"
+                    key={item}
+                    className="px-3 py-1 bg-[#D7FF45] border-2 border-[#171717] rounded-md font-mono text-xs font-bold"
                   >
-                    {h}
+                    {item}
                   </span>
                 ))}
               </div>
@@ -526,7 +484,7 @@ export default function Projects() {
                 {selected.images.map((img) => (
                   <div
                     key={img.src}
-                    className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden border border-[#17191C]/12 bg-[#17191C]"
+                    className="relative w-full aspect-[16/10] rounded-xl overflow-hidden border-[2.5px] border-[#171717] bg-[#171717]"
                   >
                     <Image
                       src={img.src}
@@ -545,9 +503,9 @@ export default function Projects() {
                     href={selected.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full glossy-pill-lime text-[#17191C] font-display font-bold text-sm"
+                    className="brutal-btn inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#D7FF45] text-[#171717] font-display font-bold text-sm min-h-[44px]"
                   >
-                    Open Live Site
+                    <span>visit live site</span>
                     <ArrowUpRight size={16} aria-hidden="true" />
                   </a>
                 </div>

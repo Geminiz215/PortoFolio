@@ -1,29 +1,38 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  ArrowUpRight,
+  Check,
+  Copy,
+  FileText,
   Mail,
   MessageCircle,
-  ArrowUpRight,
-  Copy,
-  Check,
   Send,
   X,
-  Download,
 } from "lucide-react";
-import { GlossyBubble, Magnetic, Reveal } from "./MotionPrimitives";
+import { Magnetic, MarqueeStrip, Reveal, StickerBadge } from "./MotionPrimitives";
 import { site } from "@/lib/site";
 
 export default function Contact() {
-  const [composerOpen, setComposerOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const handleCopyEmail = async () => {
+  useEffect(() => {
+    if (!modalOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setModalOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [modalOpen]);
+
+  const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(site.email);
       setCopied(true);
@@ -33,15 +42,15 @@ export default function Contact() {
     }
   };
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || message.trim().length < 6) {
-      setError("Please fill in your name, email, and a short message.");
+      setError("Drop your name, email, and a short note (6+ chars).");
       return;
     }
     setError("");
-    const subject = `Portfolio Inquiry from ${name.trim()}`;
-    const body = `Hi Fathi,\n\nName: ${name.trim()}\nEmail: ${email.trim()}\n\n${message.trim()}`;
+    const subject = `Hey Fathi — Inquiry from ${name.trim()}`;
+    const body = `Name: ${name.trim()}\nEmail: ${email.trim()}\n\n${message.trim()}`;
     window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
@@ -49,79 +58,65 @@ export default function Contact() {
     <>
       <section
         id="contact"
-        className="relative py-24 sm:py-36 bg-[#F8FAF7] overflow-hidden"
+        className="relative bg-[#D7FF45] text-[#171717] overflow-hidden"
       >
-        {/* Subtle luminous gradient wash */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-[420px] opacity-55"
-          style={{
-            background:
-              "radial-gradient(ellipse 70% 60% at 50% 100%, rgba(165,232,245,0.45), rgba(214,255,98,0.22), transparent 80%)",
-          }}
+        {/* Top Kinetic Marquee */}
+        <MarqueeStrip
+          items={[
+            "LET'S BUILD SOMETHING",
+            "OPEN FOR COLLAB",
+            "JAKARTA / REMOTE",
+            "BACKEND & FULLSTACK",
+          ]}
+          bg="#171717"
+          textColor="#FAF9F6"
+          separator="//"
         />
 
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8">
-          <div className="relative rounded-[2.75rem] bg-[#17191C] text-[#F8FAF7] p-8 sm:p-14 lg:p-20 overflow-hidden shadow-[0_36px_80px_-24px_rgba(23,25,28,0.35)]">
-            {/* Large Glossy Liquid Bubble Centerpiece */}
-            <GlossyBubble
-              tone="iridescent"
-              floatDuration={8.5}
-              floatY={14}
-              className="hidden md:flex absolute -right-12 -top-12 lg:right-8 lg:top-8 w-56 h-56 lg:w-72 lg:h-72 opacity-90 items-center justify-center animate-bubble-morph"
-            >
-              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#17191C] font-semibold bg-white/65 backdrop-blur-sm px-3.5 py-1.5 rounded-full">
-                Open to Talk
-              </span>
-            </GlossyBubble>
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-20 sm:py-28">
+          <div className="bg-[#FAF9F6] brutal-box-lg rounded-[2rem] p-7 sm:p-12 lg:p-16">
+            <Reveal className="max-w-4xl">
+              <StickerBadge bg="#FF91C8" rotate={-2}>
+                06 // CONTACT
+              </StickerBadge>
 
-            <GlossyBubble
-              tone="lime"
-              floatDuration={6.4}
-              floatY={8}
-              className="hidden lg:block absolute right-64 bottom-10 w-20 h-20 opacity-90"
-            />
-
-            <Reveal className="relative z-10 max-w-3xl">
-              <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-[#D6FF62]">
-                <span className="w-2 h-2 rounded-full bg-[#D6FF62] animate-pulse" />
-                06 / Contact
-              </span>
-
-              <h2 className="mt-5 font-display text-4xl sm:text-5xl lg:text-7xl font-bold tracking-[-0.04em] leading-[1.0] text-[#F8FAF7]">
-                Have something interesting in mind?
+              <h2 className="mt-6 font-heavy text-[clamp(2.75rem,7vw,5.75rem)] leading-[0.92] tracking-[-0.04em] text-[#171717] lowercase">
+                got something{" "}
+                <span className="inline-block bg-[#FF7545] px-3 py-0.5 border-[2.5px] border-[#171717] shadow-[5px_5px_0_#171717] rounded-xl italic">
+                  cooking?
+                </span>
               </h2>
 
-              <p className="mt-5 text-lg sm:text-xl text-[#F8FAF7]/75 max-w-xl leading-relaxed">
-                Let&apos;s build something meaningful together.
+              <p className="mt-6 font-display text-xl sm:text-2xl font-bold text-[#171717]/85 max-w-xl">
+                Let&apos;s turn that idea into something real.
               </p>
 
-              {/* Primary CTA + Quick Actions */}
-              <div className="mt-10 flex flex-wrap items-center gap-3.5">
+              {/* Primary CTA + Quick Copy / CV */}
+              <div className="mt-10 flex flex-wrap items-center gap-4">
                 <Magnetic>
                   <button
                     type="button"
-                    onClick={() => setComposerOpen(true)}
-                    className="inline-flex items-center gap-2.5 px-7 py-4 rounded-full glossy-pill-lime text-[#17191C] font-display font-bold text-sm sm:text-base tracking-tight cursor-pointer min-h-[50px]"
+                    onClick={() => setModalOpen(true)}
+                    className="brutal-btn inline-flex items-center gap-2.5 px-7 py-4 rounded-xl bg-[#171717] text-[#D7FF45] hover:bg-[#526BFF] hover:text-[#FAF9F6] font-display font-bold text-base tracking-tight cursor-pointer min-h-[54px]"
                   >
-                    <span>Start a Conversation</span>
-                    <ArrowUpRight size={18} aria-hidden="true" />
+                    <span>let&apos;s make it happen</span>
+                    <ArrowUpRight size={19} strokeWidth={2.5} aria-hidden="true" />
                   </button>
                 </Magnetic>
 
                 <button
                   type="button"
-                  onClick={handleCopyEmail}
-                  className="inline-flex items-center gap-2 px-5 py-4 rounded-full bg-white/10 hover:bg-white/16 border border-white/15 text-[#F8FAF7] text-sm font-medium transition-colors min-h-[50px]"
+                  onClick={handleCopy}
+                  className="brutal-btn inline-flex items-center gap-2 px-5 py-4 rounded-xl bg-[#D7FF45] text-[#171717] font-mono text-xs font-bold uppercase tracking-wider min-h-[54px]"
                 >
                   {copied ? (
                     <>
-                      <Check size={16} className="text-[#D6FF62]" aria-hidden="true" />
-                      <span className="text-[#D6FF62]">Copied {site.email}</span>
+                      <Check size={16} strokeWidth={2.5} aria-hidden="true" />
+                      <span>copied {site.email}</span>
                     </>
                   ) : (
                     <>
-                      <Copy size={16} aria-hidden="true" />
+                      <Copy size={15} aria-hidden="true" />
                       <span>{site.email}</span>
                     </>
                   )}
@@ -131,74 +126,62 @@ export default function Contact() {
                   href={site.cv}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-4 rounded-full bg-white/6 hover:bg-white/12 border border-white/10 text-[#F8FAF7]/90 text-sm font-medium transition-colors min-h-[50px]"
+                  className="brutal-btn inline-flex items-center gap-2 px-5 py-4 rounded-xl bg-white text-[#171717] font-mono text-xs font-bold uppercase tracking-wider min-h-[54px]"
                 >
-                  <Download size={15} aria-hidden="true" />
-                  <span>CV (PDF)</span>
+                  <FileText size={15} aria-hidden="true" />
+                  <span>CV.PDF</span>
                 </a>
               </div>
 
-              {/* Direct Verified Channels */}
-              <div className="mt-12 pt-8 border-t border-white/12 grid sm:grid-cols-3 gap-4">
+              {/* Verified Contact Channels */}
+              <div className="mt-12 pt-8 border-t-2 border-[#171717] grid sm:grid-cols-3 gap-4">
                 <a
                   href={`mailto:${site.email}`}
-                  className="group p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 transition-colors flex items-center justify-between gap-3"
+                  className="brutal-btn bg-white hover:bg-[#D7FF45] rounded-xl p-4 flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#F8FAF7]/55">
+                    <p className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#171717]/60">
                       Email
                     </p>
-                    <p className="mt-1 text-sm font-medium text-[#F8FAF7] truncate">
+                    <p className="mt-1 font-display font-bold text-sm text-[#171717] truncate">
                       {site.email}
                     </p>
                   </div>
-                  <Mail
-                    size={16}
-                    aria-hidden="true"
-                    className="text-[#D6FF62] shrink-0 transition-transform group-hover:translate-x-0.5"
-                  />
+                  <Mail size={18} aria-hidden="true" className="shrink-0" />
                 </a>
 
                 <a
                   href={site.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 transition-colors flex items-center justify-between gap-3"
+                  className="brutal-btn bg-white hover:bg-[#526BFF] hover:text-[#FAF9F6] rounded-xl p-4 flex items-center justify-between gap-3 group"
                 >
                   <div className="min-w-0">
-                    <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#F8FAF7]/55">
+                    <p className="font-mono text-[11px] font-bold uppercase tracking-widest opacity-60">
                       LinkedIn
                     </p>
-                    <p className="mt-1 text-sm font-medium text-[#F8FAF7] truncate">
+                    <p className="mt-1 font-display font-bold text-sm truncate">
                       muhammad-farhat
                     </p>
                   </div>
-                  <ArrowUpRight
-                    size={16}
-                    aria-hidden="true"
-                    className="text-[#83CFFF] shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  />
+                  <ArrowUpRight size={18} aria-hidden="true" className="shrink-0" />
                 </a>
 
                 <a
                   href={site.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 transition-colors flex items-center justify-between gap-3"
+                  className="brutal-btn bg-white hover:bg-[#FF91C8] rounded-xl p-4 flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#F8FAF7]/55">
+                    <p className="font-mono text-[11px] font-bold uppercase tracking-widest text-[#171717]/60">
                       WhatsApp
                     </p>
-                    <p className="mt-1 text-sm font-medium text-[#F8FAF7] truncate">
+                    <p className="mt-1 font-display font-bold text-sm text-[#171717] truncate">
                       {site.whatsappLabel}
                     </p>
                   </div>
-                  <MessageCircle
-                    size={16}
-                    aria-hidden="true"
-                    className="text-[#B7F5DA] shrink-0 transition-transform group-hover:scale-110"
-                  />
+                  <MessageCircle size={18} aria-hidden="true" className="shrink-0" />
                 </a>
               </div>
             </Reveal>
@@ -207,27 +190,23 @@ export default function Contact() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#F8FAF7] border-t border-[#17191C]/10 py-10">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#4A515A]">
+      <footer className="bg-[#171717] text-[#FAF9F6] border-t-[2.5px] border-[#171717] py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span
-              className="w-8 h-8 rounded-full glossy-sphere flex items-center justify-center font-display font-bold text-[11px] text-[#17191C]"
-              style={{
-                background:
-                  "radial-gradient(circle at 30% 28%, #F4FFCC 0%, #D6FF62 55%, #A5E8F5 100%)",
-              }}
-            >
+            <span className="w-9 h-9 bg-[#D7FF45] text-[#171717] border-2 border-[#FAF9F6] rounded-md flex items-center justify-center font-heavy text-xs">
               FF
             </span>
-            <span className="font-medium text-[#17191C]">Designed &amp; Developed by Fathi.</span>
+            <p className="font-display font-bold text-sm sm:text-base tracking-tight">
+              made with curiosity &amp; lots of coffee.
+            </p>
           </div>
 
-          <div className="flex items-center gap-6 text-xs font-mono uppercase tracking-[0.12em]">
+          <div className="flex flex-wrap items-center gap-6 font-mono text-xs font-bold uppercase tracking-[0.14em]">
             <a
               href={site.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#17191C] transition-colors"
+              className="text-[#FAF9F6]/75 hover:text-[#D7FF45] transition-colors"
             >
               GitHub
             </a>
@@ -235,119 +214,129 @@ export default function Contact() {
               href={site.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#17191C] transition-colors"
+              className="text-[#FAF9F6]/75 hover:text-[#FF91C8] transition-colors"
             >
               LinkedIn
             </a>
-            <a href={`mailto:${site.email}`} className="hover:text-[#17191C] transition-colors">
-              Email
-            </a>
+            <span className="text-[#D7FF45]">&copy; Fathi 2026</span>
           </div>
         </div>
       </footer>
 
-      {/* Interactive Conversation Modal */}
+      {/* Interactive Message Modal */}
       <AnimatePresence>
-        {composerOpen && (
+        {modalOpen && (
           <motion.div
             role="dialog"
             aria-modal="true"
-            aria-labelledby="contact-modal-title"
+            aria-labelledby="contact-dialog-title"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setComposerOpen(false)}
-            className="fixed inset-0 z-50 bg-[#17191C]/65 backdrop-blur-md p-4 flex items-center justify-center"
+            onClick={() => setModalOpen(false)}
+            className="fixed inset-0 z-50 bg-[#171717]/80 backdrop-blur-sm p-4 flex items-center justify-center"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 14 }}
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 14 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg rounded-[2rem] bg-[#F8FAF7] text-[#17191C] p-6 sm:p-8 shadow-2xl border border-white"
+              className="w-full max-w-lg bg-[#FAF9F6] text-[#171717] brutal-box-lg rounded-2xl p-6 sm:p-8"
             >
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-mono uppercase tracking-[0.15em] text-[#4A515A]">
-                    Direct Note
-                  </p>
+                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#526BFF]">
+                    DIRECT LINE
+                  </span>
                   <h3
-                    id="contact-modal-title"
-                    className="mt-1 font-display text-2xl font-bold tracking-tight"
+                    id="contact-dialog-title"
+                    className="mt-1 font-heavy text-2xl sm:text-3xl tracking-tight lowercase"
                   >
-                    Start a Conversation
+                    let&apos;s make it happen.
                   </h3>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setComposerOpen(false)}
-                  aria-label="Close message composer"
-                  className="w-10 h-10 rounded-full bg-[#17191C]/8 hover:bg-[#17191C] hover:text-[#F8FAF7] flex items-center justify-center transition-colors"
+                  onClick={() => setModalOpen(false)}
+                  aria-label="Close message dialog"
+                  className="brutal-btn w-10 h-10 rounded-lg bg-[#FF91C8] flex items-center justify-center shrink-0"
                 >
-                  <X size={18} />
+                  <X size={18} strokeWidth={2.5} />
                 </button>
               </div>
 
-              <form onSubmit={handleSend} className="mt-6 space-y-4">
+              <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                 <div>
-                  <label htmlFor="c-name" className="block text-xs font-mono uppercase tracking-wider text-[#4A515A] mb-1.5">
-                    Your Name
+                  <label
+                    htmlFor="m-name"
+                    className="block font-mono text-xs font-bold uppercase tracking-wider mb-1.5"
+                  >
+                    Name
                   </label>
                   <input
-                    id="c-name"
+                    id="m-name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Alex Rivera"
-                    className="w-full h-12 px-4 rounded-2xl bg-white border border-[#17191C]/12 text-sm text-[#17191C] focus:outline-none focus:ring-2 focus:ring-[#17191C]"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="c-email" className="block text-xs font-mono uppercase tracking-wider text-[#4A515A] mb-1.5">
-                    Email
-                  </label>
-                  <input
-                    id="c-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="alex@company.com"
-                    className="w-full h-12 px-4 rounded-2xl bg-white border border-[#17191C]/12 text-sm text-[#17191C] focus:outline-none focus:ring-2 focus:ring-[#17191C]"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="c-msg" className="block text-xs font-mono uppercase tracking-wider text-[#4A515A] mb-1.5">
-                    Message
-                  </label>
-                  <textarea
-                    id="c-msg"
-                    rows={4}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Tell me about your project, team, or idea..."
-                    className="w-full p-4 rounded-2xl bg-white border border-[#17191C]/12 text-sm text-[#17191C] resize-y focus:outline-none focus:ring-2 focus:ring-[#17191C]"
+                    className="w-full h-12 px-4 bg-white border-2 border-[#171717] rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#526BFF]"
                   />
                 </div>
 
-                {error && <p className="text-xs text-rose-600 font-medium">{error}</p>}
+                <div>
+                  <label
+                    htmlFor="m-email"
+                    className="block font-mono text-xs font-bold uppercase tracking-wider mb-1.5"
+                  >
+                    Email
+                  </label>
+                  <input
+                    id="m-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="alex@studio.co"
+                    className="w-full h-12 px-4 bg-white border-2 border-[#171717] rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#526BFF]"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="m-msg"
+                    className="block font-mono text-xs font-bold uppercase tracking-wider mb-1.5"
+                  >
+                    What are we building?
+                  </label>
+                  <textarea
+                    id="m-msg"
+                    rows={4}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Tell me about the project, role, or timeline..."
+                    className="w-full p-4 bg-white border-2 border-[#171717] rounded-xl text-sm font-medium resize-y focus:outline-none focus:ring-2 focus:ring-[#526BFF]"
+                  />
+                </div>
+
+                {error && <p className="text-xs font-bold text-[#FF7545]">{error}</p>}
 
                 <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
                   <a
                     href={site.whatsapp}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#4A515A] hover:text-[#17191C]"
+                    className="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-[#171717] underline decoration-[#526BFF] decoration-2 underline-offset-4"
                   >
                     <MessageCircle size={14} aria-hidden="true" />
-                    Or chat on WhatsApp
+                    <span>WhatsApp instead</span>
                   </a>
+
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full glossy-pill-lime text-[#17191C] font-display font-bold text-sm min-h-[44px]"
+                    className="brutal-btn inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#D7FF45] text-[#171717] font-display font-bold text-sm min-h-[46px]"
                   >
                     <Send size={15} aria-hidden="true" />
-                    Send via Email
+                    <span>send note</span>
                   </button>
                 </div>
               </form>

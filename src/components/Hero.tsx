@@ -1,157 +1,157 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, MapPin, Sparkles, Download } from "lucide-react";
-import { GlossyBubble, Magnetic } from "./MotionPrimitives";
+import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
+import { ArrowDown, ArrowUpRight, FileText } from "lucide-react";
+import { Magnetic, MarqueeStrip, StickerBadge } from "./MotionPrimitives";
 import { site } from "@/lib/site";
-
-const FLOATING_LABELS = [
-  {
-    text: "Go / GoFiber",
-    sub: "Backend Core",
-    dot: "#D6FF62",
-    pos: "top-6 -left-3 sm:-left-10",
-    delay: 0.35,
-  },
-  {
-    text: "Next.js & React",
-    sub: "Fullstack UI",
-    dot: "#83CFFF",
-    pos: "top-[42%] -right-3 sm:-right-8",
-    delay: 0.45,
-  },
-  {
-    text: "1,000+ Users",
-    sub: "Production Scale",
-    dot: "#FFB8D5",
-    pos: "bottom-12 -left-2 sm:-left-8",
-    delay: 0.55,
-  },
-];
 
 export default function Hero() {
   const prefersReduced = useReducedMotion();
+  const posterRef = useRef<HTMLDivElement>(null);
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const sx = useSpring(px, { stiffness: 160, damping: 18 });
+  const sy = useSpring(py, { stiffness: 160, damping: 18 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (prefersReduced || !posterRef.current) return;
+    const rect = posterRef.current.getBoundingClientRect();
+    const dx = ((e.clientX - (rect.left + rect.width / 2)) / rect.width) * 14;
+    const dy = ((e.clientY - (rect.top + rect.height / 2)) / rect.height) * 14;
+    px.set(dx);
+    py.set(dy);
+  };
+
+  const handleMouseLeave = () => {
+    px.set(0);
+    py.set(0);
+  };
 
   return (
     <section
       id="top"
-      className="relative min-h-[100svh] flex flex-col justify-between pt-28 pb-10 sm:pt-32 lg:pt-36 overflow-hidden bg-[#F8FAF7]"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative min-h-[100svh] flex flex-col justify-between pt-28 sm:pt-32 bg-[#FAF9F6] bg-swiss-grid overflow-hidden"
     >
-      {/* Subtle atmospheric color washes — non-generic, airy mint/aqua/lavender */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-32 -right-24 w-[560px] h-[560px] rounded-full opacity-50 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(165,232,245,0.55) 0%, rgba(201,184,255,0.28) 45%, transparent 72%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 -left-32 w-[480px] h-[480px] rounded-full opacity-45 blur-3xl"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(183,245,218,0.6) 0%, rgba(214,255,98,0.25) 50%, transparent 75%)",
-        }}
-      />
-
-      <div className="relative max-w-7xl w-full mx-auto px-5 sm:px-8 my-auto">
-        {/* Top Editorial Metadata Strip */}
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-8 pb-12 my-auto">
+        {/* Top Swiss Metadata Bar */}
         <motion.div
           initial={prefersReduced ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-8 lg:mb-10 text-xs font-mono uppercase tracking-[0.14em] text-[#4A515A]"
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-wrap items-center justify-between gap-3 pb-6 mb-8 border-b-2 border-[#171717]"
         >
-          <span className="inline-flex items-center gap-2 text-[#17191C] font-medium">
-            <MapPin size={13} aria-hidden="true" className="text-[#17191C]" />
-            {site.location}
-          </span>
-          <span className="hidden sm:inline text-[#17191C]/20">/</span>
-          <span>3+ Years of Development Experience</span>
-          <span className="hidden sm:inline text-[#17191C]/20">/</span>
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#B7F5DA]/60 text-[#17191C] font-semibold">
-            <Sparkles size={11} aria-hidden="true" />
-            Backend &amp; Fullstack
-          </span>
+          <div className="flex flex-wrap items-center gap-3 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em]">
+            <span className="px-2.5 py-1 bg-[#171717] text-[#D7FF45] rounded-sm">
+              JAKARTA, INDONESIA
+            </span>
+            <span className="text-[#171717]">{"//"} 3+ YRS PRODUCTION EXP</span>
+          </div>
+
+          <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-[#171717]">
+            <span className="hidden sm:inline">PORTFOLIO DROP</span>
+            <span className="px-2 py-0.5 border-2 border-[#171717] bg-[#FF91C8] rounded-sm">
+              ED. 2026
+            </span>
+          </div>
         </motion.div>
 
-        {/* Asymmetrical Editorial Grid */}
-        <div className="grid lg:grid-cols-[1.22fr_0.78fr] gap-12 lg:gap-10 items-center">
-          {/* Left: Oversized Expressive Typography */}
-          <div className="relative z-10">
-            <motion.p
-              initial={prefersReduced ? false : { opacity: 0, y: 16 }}
+        {/* Asymmetric Editorial Grid */}
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+          {/* Left 7 Cols: Oversized Statement Typography */}
+          <div className="lg:col-span-7 relative z-10">
+            <motion.div
+              initial={prefersReduced ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-[#17191C] mb-3"
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-wrap items-center gap-3 mb-4"
             >
-              Hi, I&apos;m{" "}
-              <span className="relative inline-block px-3 py-0.5 rounded-full bg-[#D6FF62] shadow-[inset_0_2px_1px_rgba(255,255,255,0.85),0_8px_20px_-6px_rgba(182,232,42,0.5)]">
-                Fathi.
-              </span>
-            </motion.p>
+              <StickerBadge bg="#FF7545" textColor="#171717" rotate={-3}>
+                BACKEND &amp; FULLSTACK
+              </StickerBadge>
+              <StickerBadge bg="#526BFF" textColor="#FAF9F6" rotate={2}>
+                GO / NEXT.JS / SQL
+              </StickerBadge>
+            </motion.div>
 
             <motion.h1
-              initial={prefersReduced ? false : { opacity: 0, y: 22 }}
+              initial={prefersReduced ? false : { opacity: 0, y: 26 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-[clamp(2.65rem,6.4vw,5.4rem)] font-bold leading-[0.98] tracking-[-0.04em] text-[#17191C]"
+              transition={{ duration: 0.6, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+              className="font-heavy text-[clamp(3.1rem,8.5vw,6.8rem)] leading-[0.9] tracking-[-0.04em] text-[#171717] lowercase"
             >
-              Building digital systems that{" "}
-              <span className="relative inline-block">
-                <span className="relative z-10">work beautifully.</span>
-                <span
+              yo, i&apos;m
+              <br />
+              <span className="relative inline-flex items-center mt-2">
+                <span className="relative z-10 inline-block bg-[#D7FF45] px-4 sm:px-6 py-1 sm:py-2 border-[3px] border-[#171717] shadow-[7px_7px_0_#171717] rounded-xl -rotate-1">
+                  fathi.
+                </span>
+                {/* Rotating Stamp Graphic */}
+                <svg
+                  viewBox="0 0 80 80"
                   aria-hidden="true"
-                  className="absolute -bottom-1 left-0 right-0 h-3 sm:h-4 rounded-full bg-gradient-to-r from-[#A5E8F5] via-[#B7F5DA] to-[#D6FF62] -z-0 opacity-80"
-                />
+                  className="hidden sm:block w-16 h-16 ml-4 text-[#171717] animate-spin-slow shrink-0"
+                >
+                  <path
+                    fill="#FF91C8"
+                    stroke="#171717"
+                    strokeWidth="2.5"
+                    d="M40 4 L47 22 L66 14 L58 33 L76 40 L58 47 L66 66 L47 58 L40 76 L33 58 L14 66 L22 47 L4 40 L22 33 L14 14 L33 22 Z"
+                  />
+                  <circle cx="40" cy="40" r="8" fill="#171717" />
+                </svg>
               </span>
             </motion.h1>
 
             <motion.p
-              initial={prefersReduced ? false : { opacity: 0, y: 18 }}
+              initial={prefersReduced ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-6 max-w-xl text-base sm:text-[18px] text-[#4A515A] leading-relaxed"
+              transition={{ duration: 0.55, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-7 font-display text-2xl sm:text-3xl lg:text-[2.15rem] font-bold leading-[1.15] tracking-tight text-[#171717] max-w-2xl"
             >
-              I&apos;m a Backend &amp; Fullstack Developer focused on building scalable
-              applications, reliable backend systems, and thoughtful digital experiences.
+              I build digital products,{" "}
+              <span className="italic underline decoration-[#FF7545] decoration-[4px] underline-offset-4">
+                scalable systems
+              </span>{" "}
+              &amp; experiences that just work.
             </motion.p>
 
-            {/* Primary & Secondary CTAs */}
+            <motion.p
+              initial={prefersReduced ? false : { opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-5 text-base sm:text-lg text-[#171717]/80 max-w-xl leading-relaxed font-medium"
+            >
+              Backend &amp; Fullstack Developer based in Jakarta, Indonesia. Turning complex
+              problems into clean, scalable digital solutions.
+            </motion.p>
+
+            {/* CTAs */}
             <motion.div
               initial={prefersReduced ? false : { opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-9 flex flex-wrap items-center gap-3.5"
+              transition={{ duration: 0.5, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="mt-9 flex flex-wrap items-center gap-4"
             >
               <Magnetic>
                 <a
-                  href="#projects"
-                  className="group inline-flex items-center gap-2.5 px-7 py-4 rounded-full glossy-pill-lime text-[#17191C] font-display font-bold text-sm sm:text-[15px] tracking-tight transition-transform duration-200 active:scale-[0.98] min-h-[48px]"
+                  href="#work"
+                  className="brutal-btn inline-flex items-center gap-2.5 px-7 py-4 rounded-xl bg-[#D7FF45] text-[#171717] font-display font-bold text-base tracking-tight min-h-[52px]"
                 >
-                  Explore My Work
-                  <ArrowDownRight
-                    size={18}
-                    aria-hidden="true"
-                    className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:translate-y-0.5"
-                  />
+                  <span>check my work</span>
+                  <ArrowUpRight size={19} strokeWidth={2.5} aria-hidden="true" />
                 </a>
               </Magnetic>
 
-              <Magnetic strength={0.16}>
+              <Magnetic strength={0.15}>
                 <a
                   href="#contact"
-                  className="group inline-flex items-center gap-2 px-6 py-4 rounded-full bg-[#17191C] text-[#F8FAF7] hover:bg-[#272B30] font-display font-semibold text-sm sm:text-[15px] tracking-tight transition-all duration-200 shadow-[0_12px_28px_-8px_rgba(23,25,28,0.28)] active:scale-[0.98] min-h-[48px]"
+                  className="brutal-btn inline-flex items-center gap-2 px-7 py-4 rounded-xl bg-[#FF91C8] text-[#171717] font-display font-bold text-base tracking-tight min-h-[52px]"
                 >
-                  Let&apos;s Connect
-                  <ArrowUpRight
-                    size={17}
-                    aria-hidden="true"
-                    className="text-[#D6FF62] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  />
+                  <span>let&apos;s talk :)</span>
                 </a>
               </Magnetic>
 
@@ -159,125 +159,99 @@ export default function Hero() {
                 href={site.cv}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-3 rounded-full text-sm font-medium text-[#4A515A] hover:text-[#17191C] hover:bg-[#17191C]/5 transition-colors min-h-[44px]"
+                className="inline-flex items-center gap-2 px-4 py-3 font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#171717] hover:bg-[#171717] hover:text-[#D7FF45] rounded-lg border-2 border-[#171717] transition-colors min-h-[48px]"
               >
-                <Download size={15} aria-hidden="true" />
-                <span>Resume PDF</span>
+                <FileText size={15} aria-hidden="true" />
+                <span>CV.PDF</span>
               </a>
             </motion.div>
           </div>
 
-          {/* Right: Glossy 3D Bubble Sculpture + Portrait Focal Point */}
+          {/* Right 5 Cols: Streetwear Editorial Portrait Poster */}
           <motion.div
-            initial={prefersReduced ? false : { opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mx-auto w-full max-w-[360px] sm:max-w-[420px] lg:max-w-none"
+            ref={posterRef}
+            initial={prefersReduced ? false : { opacity: 0, scale: 0.94, rotate: 1 }}
+            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+            transition={{ duration: 0.6, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-5 relative mx-auto w-full max-w-[360px] sm:max-w-[420px] lg:max-w-none"
           >
-            <div className="relative aspect-[4/4.6] flex items-center justify-center">
-              {/* Sculptural 3D Glossy Bubbles */}
-              <GlossyBubble
-                tone="iridescent"
-                floatDuration={7.5}
-                floatY={12}
-                className="absolute -top-4 right-2 sm:right-6 w-28 h-28 sm:w-36 sm:h-36 z-0"
-              />
-              <GlossyBubble
-                tone="lime"
-                floatDuration={6.2}
-                floatY={9}
-                className="absolute bottom-8 -left-4 sm:-left-6 w-20 h-20 sm:w-24 sm:h-24 z-20"
-              />
-              <GlossyBubble
-                tone="pink"
-                floatDuration={8.2}
-                floatY={11}
-                className="hidden sm:block absolute bottom-2 right-0 w-16 h-16 z-20"
-              />
-              <GlossyBubble
-                tone="aqua"
-                floatDuration={5.8}
-                floatY={7}
-                className="absolute top-1/4 -left-3 w-12 h-12 z-0"
-              />
+            {/* Color-blocked Cobalt backdrop offset */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 translate-x-3 translate-y-3 sm:translate-x-4 sm:translate-y-4 bg-[#526BFF] border-[3px] border-[#171717] rounded-[1.75rem]"
+            />
 
-              {/* Organic Glossy Capsule Framing the Portrait */}
-              <div className="relative z-10 w-[84%] h-[88%] rounded-[3.25rem] chrome-border shadow-[0_32px_64px_-16px_rgba(23,25,28,0.16)] animate-bubble-morph overflow-hidden">
-                <div
-                  className="relative w-full h-full rounded-[3.15rem] overflow-hidden"
-                  style={{
-                    background:
-                      "linear-gradient(155deg, #E8FAF3 0%, #D9F2FA 48%, #EFEAFF 100%)",
-                  }}
-                >
-                  {/* Glossy top-left reflection inside capsule */}
-                  <div
-                    aria-hidden="true"
-                    className="absolute top-4 left-6 w-2/3 h-20 rounded-full bg-white/55 blur-xl pointer-events-none z-20"
-                  />
-                  <Image
-                    src="/profile.png"
-                    alt="Portrait of Muhammad Fathi Farhat"
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 80vw, 420px"
-                    className="object-cover object-top scale-[1.03]"
-                  />
-                </div>
+            <motion.div
+              style={prefersReduced ? undefined : { x: sx, y: sy }}
+              className="relative bg-[#FF91C8] border-[3px] border-[#171717] rounded-[1.75rem] overflow-hidden aspect-[4/4.7] shadow-[6px_6px_0_#171717]"
+            >
+              {/* Swiss Crop Marks */}
+              <div
+                aria-hidden="true"
+                className="absolute top-3 left-3 z-20 px-2.5 py-1 bg-[#171717] text-[#FAF9F6] font-mono text-[10px] font-bold uppercase tracking-widest rounded-sm"
+              >
+                FIG.01 // FATHI
+              </div>
+              <div
+                aria-hidden="true"
+                className="absolute top-3 right-3 z-20 w-7 h-7 rounded-full bg-[#D7FF45] border-2 border-[#171717] flex items-center justify-center font-mono text-xs font-bold"
+              >
+                +
               </div>
 
-              {/* Floating Technical Labels */}
-              {FLOATING_LABELS.map((item) => (
-                <motion.div
-                  key={item.text}
-                  initial={prefersReduced ? false : { opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: item.delay }}
-                  whileHover={prefersReduced ? undefined : { y: -3, scale: 1.03 }}
-                  className={`hidden sm:flex absolute ${item.pos} z-30 glass-badge rounded-2xl px-3.5 py-2.5 items-center gap-2.5`}
-                >
-                  <span
-                    className="w-2.5 h-2.5 rounded-full shrink-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8)]"
-                    style={{ backgroundColor: item.dot }}
-                    aria-hidden="true"
-                  />
-                  <div className="leading-tight">
-                    <p className="text-xs font-display font-bold text-[#17191C] whitespace-nowrap">
-                      {item.text}
-                    </p>
-                    <p className="text-[10px] font-mono uppercase tracking-wider text-[#4A515A]">
-                      {item.sub}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+              <Image
+                src="/profile.png"
+                alt="Portrait of Muhammad Fathi Farhat"
+                fill
+                priority
+                sizes="(max-width: 1024px) 85vw, 440px"
+                className="object-cover object-top"
+              />
+
+              {/* Bottom Streetwear Stamp Bar */}
+              <div className="absolute bottom-3 left-3 right-3 z-20 bg-[#FAF9F6] border-2 border-[#171717] shadow-[3px_3px_0_#171717] rounded-lg px-3.5 py-2.5 flex items-center justify-between gap-2">
+                <div>
+                  <p className="font-display font-bold text-xs sm:text-sm text-[#171717] leading-tight">
+                    Muhammad Fathi Farhat
+                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-[#171717]/70">
+                    Systems &amp; Fullstack Craft
+                  </p>
+                </div>
+                <span className="px-2.5 py-1 bg-[#D7FF45] border-2 border-[#171717] font-mono text-[10px] font-bold uppercase tracking-wider rounded-sm shrink-0">
+                  1K+ USERS
+                </span>
+              </div>
+            </motion.div>
           </motion.div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="mt-10 flex items-center justify-between font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#171717]/75">
+          <a
+            href="#about"
+            className="inline-flex items-center gap-2 hover:text-[#171717] transition-colors group"
+          >
+            <span className="w-7 h-7 rounded-full border-2 border-[#171717] bg-[#D7FF45] flex items-center justify-center transition-transform group-hover:translate-y-0.5">
+              <ArrowDown size={14} strokeWidth={2.5} aria-hidden="true" />
+            </span>
+            <span>scroll down</span>
+          </a>
+          <span className="hidden sm:inline">INDONESIA // UTC+7</span>
         </div>
       </div>
 
-      {/* Subtle Scroll Indicator */}
-      <motion.div
-        initial={prefersReduced ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.65, duration: 0.6 }}
-        className="relative max-w-7xl w-full mx-auto px-5 sm:px-8 pt-6 flex items-center justify-between text-xs font-mono uppercase tracking-[0.16em] text-[#4A515A]"
-      >
-        <a
-          href="#about"
-          className="inline-flex items-center gap-3 hover:text-[#17191C] transition-colors group"
-        >
-          <span className="w-5 h-8 rounded-full border border-[#17191C]/25 flex items-start justify-center p-1">
-            <motion.span
-              animate={prefersReduced ? undefined : { y: [0, 10, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-              className="w-1 h-2 rounded-full bg-[#17191C]"
-            />
-          </span>
-          <span>Scroll to explore</span>
-        </a>
-        <span className="hidden sm:inline">Portfolio &mdash; 2026 Edition</span>
-      </motion.div>
+      {/* Kinetic Marquee Strip */}
+      <MarqueeStrip
+        items={[
+          "BACKEND ARCHITECTURE",
+          "FULLSTACK PRODUCTS",
+          "GO & GOFIBER",
+          "NEXT.JS & REACT",
+          "ENTERPRISE SYSTEMS",
+          "API DESIGN",
+        ]}
+      />
     </section>
   );
 }

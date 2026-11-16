@@ -1,59 +1,44 @@
 @import "tailwindcss";
 
 @theme {
+  --font-heavy: var(--font-heavy), "Archivo Black", system-ui, sans-serif;
   --font-display: var(--font-display), "Space Grotesk", system-ui, sans-serif;
-  --font-sans: var(--font-sans), "Inter", system-ui, sans-serif;
+  --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
 
-  /* Fresh Glossy Bubble Color Tokens */
-  --color-lime: #D6FF62;
-  --color-mint: #B7F5DA;
-  --color-aqua: #A5E8F5;
-  --color-sky: #83CFFF;
-  --color-lavender: #C9B8FF;
-  --color-pink: #FFB8D5;
-  --color-ink: #17191C;
-  --color-ink-muted: #4A515A;
-  --color-canvas: #F8FAF7;
-  --color-canvas-warm: #EFF4EE;
+  /* Gen Z Creative Studio Color Tokens */
+  --color-lime: #D7FF45;
+  --color-orange: #FF7545;
+  --color-pink: #FF91C8;
+  --color-cobalt: #526BFF;
+  --color-ink: #171717;
+  --color-paper: #FAF9F6;
 
-  /* Motion Timing Tokens */
-  --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-bubble: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-marquee-x: marquee-x 28s linear infinite;
+  --animate-spin-slow: spin-slow 18s linear infinite;
 
-  --animate-bubble-float: bubble-float 7s ease-in-out infinite;
-  --animate-bubble-morph: bubble-morph 12s ease-in-out infinite;
-
-  @keyframes bubble-float {
-    0%, 100% {
-      transform: translate3d(0, 0, 0) rotate(0deg);
+  @keyframes marquee-x {
+    0% {
+      transform: translate3d(0, 0, 0);
     }
-    50% {
-      transform: translate3d(0, -12px, 0) rotate(1.5deg);
+    100% {
+      transform: translate3d(-50%, 0, 0);
     }
   }
 
-  @keyframes bubble-morph {
-    0%, 100% {
-      border-radius: 54% 46% 42% 58% / 48% 54% 46% 52%;
+  @keyframes spin-slow {
+    0% {
+      transform: rotate(0deg);
     }
-    33% {
-      border-radius: 44% 56% 52% 48% / 55% 42% 58% 45%;
-    }
-    66% {
-      border-radius: 58% 42% 48% 52% / 44% 58% 42% 56%;
+    100% {
+      transform: rotate(360deg);
     }
   }
 }
 
 :root {
-  --background: #F8FAF7;
-  --foreground: #17191C;
-  --surface-matte: #EFF4EE;
-  --surface-ink: #17191C;
-  --border-subtle: rgba(23, 25, 28, 0.1);
-  --radius-pill: 9999px;
-  --radius-editorial: 2rem;
+  --background: #FAF9F6;
+  --foreground: #171717;
 }
 
 html {
@@ -66,7 +51,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.65;
+  line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -76,114 +61,70 @@ h1, h2, h3, h4 {
   letter-spacing: -0.03em;
 }
 
-/* ---- Material Surfaces ---- */
+/* ---- Neo-Brutalist & Streetwear Surfaces ---- */
 
-/* Frosted Translucent Glass (used selectively for floating nav & micro-tags) */
-.glass-dock {
-  background: rgba(248, 250, 247, 0.78);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow:
-    0 12px 36px -8px rgba(23, 25, 28, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+.brutal-box {
+  border: 2.5px solid #171717;
+  box-shadow: 5px 5px 0px #171717;
 }
 
-.glass-badge {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(14px) saturate(150%);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow:
-    0 10px 28px -6px rgba(23, 25, 28, 0.09),
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.95);
+.brutal-box-lg {
+  border: 3px solid #171717;
+  box-shadow: 8px 8px 0px #171717;
 }
 
-/* Glossy 3D Bubble Material */
-.glossy-sphere {
-  position: relative;
-  border-radius: 9999px;
-  box-shadow:
-    0 24px 48px -12px rgba(23, 25, 28, 0.14),
-    inset 0 -14px 26px rgba(23, 25, 28, 0.08),
-    inset 0 10px 20px rgba(255, 255, 255, 0.85);
+.brutal-btn {
+  border: 2.5px solid #171717;
+  box-shadow: 4px 4px 0px #171717;
+  transition:
+    transform 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 150ms ease,
+    color 150ms ease;
 }
 
-.glossy-sphere::before {
-  content: "";
-  position: absolute;
-  top: 9%;
-  left: 14%;
-  width: 44%;
-  height: 22%;
-  border-radius: 9999px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(255, 255, 255, 0.25) 75%,
-    transparent 100%
-  );
-  transform: rotate(-22deg);
-  pointer-events: none;
+.brutal-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #171717;
 }
 
-.glossy-sphere::after {
-  content: "";
-  position: absolute;
-  bottom: 11%;
-  right: 16%;
-  width: 22%;
-  height: 10%;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.45);
-  filter: blur(2px);
-  transform: rotate(-18deg);
-  pointer-events: none;
+.brutal-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #171717;
 }
 
-/* Glossy CTA Button Sheen */
-.glossy-pill-lime {
-  background: linear-gradient(180deg, #E3FF8A 0%, #D6FF62 55%, #C5F542 100%);
-  box-shadow:
-    0 12px 28px -6px rgba(182, 232, 42, 0.45),
-    inset 0 2px 1px rgba(255, 255, 255, 0.85),
-    inset 0 -2px 4px rgba(23, 25, 28, 0.08);
+.sticker-tag {
+  border: 2px solid #171717;
+  box-shadow: 3px 3px 0px #171717;
 }
 
-.glossy-pill-lime:hover {
-  background: linear-gradient(180deg, #EBFFA6 0%, #DFFF7A 55%, #CCF74F 100%);
-  box-shadow:
-    0 16px 34px -6px rgba(182, 232, 42, 0.55),
-    inset 0 2px 1px rgba(255, 255, 255, 0.9),
-    inset 0 -2px 4px rgba(23, 25, 28, 0.08);
+/* Swiss architectural grid */
+.bg-swiss-grid {
+  background-image:
+    linear-gradient(to right, rgba(23, 23, 23, 0.065) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 23, 23, 0.065) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
-/* Chrome-like Reflective Accent Border */
-.chrome-border {
-  position: relative;
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(165,232,245,0.5), rgba(201,184,255,0.5), rgba(255,255,255,0.9));
-  padding: 1.5px;
-}
-
-/* Subtle architectural dot grid */
-.bg-editorial-dots {
-  background-image: radial-gradient(rgba(23, 25, 28, 0.085) 1px, transparent 1px);
-  background-size: 28px 28px;
+.bg-swiss-grid-dark {
+  background-image:
+    linear-gradient(to right, rgba(250, 249, 246, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(250, 249, 246, 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 /* Custom selection */
 ::selection {
-  background-color: #D6FF62;
-  color: #17191C;
+  background-color: #D7FF45;
+  color: #171717;
 }
 
-/* Accessibility: respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-  .animate-bubble-float,
-  .animate-bubble-morph {
+  .animate-marquee-x,
+  .animate-spin-slow {
     animation: none !important;
   }
 }
