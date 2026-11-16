@@ -1,206 +1,167 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { Menu, X, ArrowUpRight, Download } from "lucide-react";
-import { site } from "@/lib/site";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Home", href: "#home" },
-  { label: "About", href: "#about" },
-  { label: "Experience", href: "#experience" },
-  { label: "Projects", href: "#projects" },
-  { label: "Skills", href: "#skills" },
-  { label: "Contact", href: "#contact" },
-];
+  { id: "about", label: "About" },
+  { id: "experience", label: "Experience" },
+  { id: "projects", label: "Projects" },
+  { id: "skills", label: "Skills" },
+  { id: "contact", label: "Contact" },
+] as const;
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [active, setActive] = useState<string>("");
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
-
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 220,
-    damping: 30,
-    restDelta: 0.001,
-  });
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-      const sections = NAV_ITEMS.map((item) => item.href.substring(1));
-      let currentSection = "home";
+  useEffect(() => {
+    const sections = NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(
+      Boolean
+    ) as HTMLElement[];
 
-      for (const section of sections) {
-        const el = document.getElementById(section);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 140 && rect.bottom >= 140) {
-            currentSection = section;
-            break;
-          }
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]) {
+          setActive(visible[0].target.id);
         }
-      }
-      setActiveSection(currentSection);
-    };
+      },
+      { rootMargin: "-30% 0px -50% 0px", threshold: [0.1, 0.35, 0.6] }
+    );
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    sections.forEach((sec) => observer.observe(sec));
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <>
-      <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-[#070B12]/85 backdrop-blur-lg border-b border-slate-800/80 py-3.5 shadow-lg shadow-black/20"
-            : "bg-transparent py-5"
-        }`}
-      >
-        {/* Reading progress bar for HR scannability */}
-        <motion.div
-          style={{ scaleX }}
-          className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 origin-left"
-        />
-
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
-          {/* Logo */}
-          <a href="#home" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-950 flex items-center justify-center font-extrabold text-sm tracking-tighter group-hover:bg-cyan-400 transition-colors duration-200">
-              MF
-            </div>
-            <div className="flex flex-col">
-              <span className="text-slate-50 font-bold text-xs tracking-wider leading-none">
-                M. FATHI FARHAT
-              </span>
-              <span className="text-[11px] text-slate-400 font-mono mt-1 leading-none">
-                BACKEND / FULLSTACK
-              </span>
-            </div>
+    <header className="fixed top-4 inset-x-0 z-50 px-4 sm:px-6 pointer-events-none">
+      <div className="max-w-5xl mx-auto flex flex-col items-center">
+        <nav
+          aria-label="Primary Navigation"
+          className={`pointer-events-auto w-full sm:w-auto flex items-center justify-between gap-3 sm:gap-6 px-3 sm:px-4 py-2 rounded-full glass-dock transition-all duration-300 ${
+            scrolled ? "shadow-[0_16px_40px_-10px_rgba(23,25,28,0.14)]" : ""
+          }`}
+        >
+          {/* Monogram FF */}
+          <a
+            href="#top"
+            onClick={() => setActive("")}
+            aria-label="Fathi Farhat — Back to top"
+            className="flex items-center gap-2.5 pr-1 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#17191C] rounded-full"
+          >
+            <span
+              className="w-9 h-9 rounded-full glossy-sphere flex items-center justify-center font-display font-bold text-xs tracking-tight text-[#17191C] transition-transform duration-300 group-hover:scale-105"
+              style={{
+                background:
+                  "radial-gradient(circle at 30% 28%, #F4FFCC 0%, #D6FF62 55%, #A5E8F5 100%)",
+              }}
+            >
+              FF
+            </span>
           </a>
 
-          {/* Desktop Navigation */}
-          <nav
-            aria-label="Primary navigation"
-            className="hidden lg:flex items-center gap-1 bg-slate-900/70 border border-slate-800/80 px-2 py-1.5 rounded-full backdrop-blur-md"
-          >
+          {/* Desktop Links */}
+          <ul className="hidden md:flex items-center gap-1">
             {NAV_ITEMS.map((item) => {
-              const isActive = activeSection === item.href.substring(1);
+              const isActive = active === item.id;
               return (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className={`text-[13px] font-medium px-3.5 py-1.5 rounded-full transition-colors duration-200 relative ${
-                    isActive ? "text-slate-50" : "text-slate-300 hover:text-white"
-                  }`}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="activeNavBackground"
-                      className="absolute inset-0 bg-slate-800/90 border border-slate-700/80 rounded-full -z-10"
-                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                    />
-                  )}
-                  {item.label}
-                </a>
+                <li key={item.id}>
+                  <a
+                    href={`#${item.id}`}
+                    className={`relative px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#17191C] ${
+                      isActive ? "text-[#17191C] font-semibold" : "text-[#4A515A] hover:text-[#17191C]"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="navActiveIndicator"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 rounded-full bg-[#D6FF62] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] -z-10"
+                      />
+                    )}
+                    {item.label}
+                  </a>
+                </li>
               );
             })}
-          </nav>
+          </ul>
 
-          {/* HR Quick Actions */}
-          <div className="hidden md:flex items-center gap-2.5 shrink-0">
-            <a
-              href={site.cv}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-200 hover:text-cyan-400 px-3.5 py-2.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:border-cyan-400/40 transition-colors duration-200"
-            >
-              <Download size={14} />
-              Resume / CV
-            </a>
+          {/* Availability Indicator + Mobile Toggle */}
+          <div className="flex items-center gap-2">
             <a
               href="#contact"
-              className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-lg flex items-center gap-1.5 transition-colors duration-200 shadow-sm shadow-cyan-500/10 group"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#17191C] text-[#F8FAF7] text-xs font-medium tracking-tight hover:bg-[#262A30] transition-colors min-h-[36px]"
             >
-              Hire / Contact
-              <ArrowUpRight
-                size={14}
-                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-              />
+              <span className="relative flex h-2 w-2" aria-hidden="true">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D6FF62] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D6FF62]" />
+              </span>
+              <span>Available</span>
             </a>
+
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-expanded={mobileOpen}
+              aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
+              className="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-[#17191C] hover:bg-[#17191C]/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#17191C]"
+            >
+              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
           </div>
+        </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 transition-colors"
-            aria-label="Toggle Menu"
-            aria-expanded={isOpen}
-          >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </header>
-
-      {/* Mobile Drawer Overlay */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 bg-[#070B12]/95 backdrop-blur-xl md:hidden flex flex-col justify-center items-center px-6"
-          >
-            <nav className="flex flex-col gap-5 text-center w-full max-w-xs">
-              {NAV_ITEMS.map((item, index) => (
-                <motion.a
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.04 }}
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`text-lg font-bold tracking-wide py-1.5 ${
-                    activeSection === item.href.substring(1)
-                      ? "text-cyan-400"
-                      : "text-slate-300 hover:text-white"
-                  }`}
-                >
-                  {item.label}
-                </motion.a>
-              ))}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: NAV_ITEMS.length * 0.04 }}
-                className="mt-4 pt-5 border-t border-slate-800 flex flex-col gap-3"
-              >
-                <a
-                  href={site.cv}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsOpen(false)}
-                  className="border border-slate-700 bg-slate-900 text-slate-100 font-semibold text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 hover:border-cyan-400/40 transition-colors"
-                >
-                  <Download size={16} />
-                  Download CV (PDF)
-                </a>
-                <a
-                  href="#contact"
-                  onClick={() => setIsOpen(false)}
-                  className="bg-cyan-400 text-slate-950 font-bold text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-cyan-300 transition-colors"
-                >
-                  Hire / Contact
-                  <ArrowUpRight size={16} />
-                </a>
-              </motion.div>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        {/* Mobile Dropdown Drawer */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.97 }}
+              animate={{ opacity: 1, y: 8, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.97 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              className="pointer-events-auto md:hidden w-full max-w-sm rounded-3xl glass-dock p-3 shadow-2xl"
+            >
+              <ul className="flex flex-col gap-1">
+                {NAV_ITEMS.map((item) => {
+                  const isActive = active === item.id;
+                  return (
+                    <li key={item.id}>
+                      <a
+                        href={`#${item.id}`}
+                        onClick={() => setMobileOpen(false)}
+                        className={`flex items-center justify-between px-4 min-h-[44px] rounded-2xl text-sm font-medium transition-colors ${
+                          isActive
+                            ? "bg-[#D6FF62] text-[#17191C] font-semibold"
+                            : "text-[#17191C] hover:bg-[#17191C]/5"
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                        <span className="text-[11px] font-mono uppercase tracking-widest opacity-50">
+                          0{NAV_ITEMS.indexOf(item) + 1}
+                        </span>
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </header>
   );
 }

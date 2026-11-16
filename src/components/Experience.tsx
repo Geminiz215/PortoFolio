@@ -1,172 +1,253 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Briefcase, MapPin, ChevronDown, GraduationCap } from "lucide-react";
-import { Reveal, SectionHeading, Tag } from "./ui";
+import React, { useRef, useState } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { Plus, Minus, ArrowUpRight } from "lucide-react";
+import { Reveal } from "./MotionPrimitives";
 
-const jobs = [
+type ExperienceItem = {
+  index: string;
+  yearDisplay: string;
+  period: string;
+  role: string;
+  company: string;
+  location: string;
+  current: boolean;
+  summary: string;
+  contributions: string[];
+  stack: string[];
+  variant: "light" | "dark";
+};
+
+const EXPERIENCES: ExperienceItem[] = [
   {
-    role: "Fullstack Developer",
-    company: "PT CSM Corporatama — Indomobil Group",
+    index: "01",
+    yearDisplay: "2025 — NOW",
     period: "November 2025 — Present",
-    location: "Jakarta",
+    role: "Fullstack Developer",
+    company: "PT CSM Corporatama (Indomobil Group)",
+    location: "Jakarta, Indonesia",
     current: true,
-    points: [
-      "Built CRMS serving 1,000+ users",
-      "Developed approval workflow applications",
-      "Built HRIS for employee leave, permits, attendance, and correspondence",
-      "Developed Business Intelligence system processing 10,000+ records",
-      "Built internal company portal",
-      "Used AI-assisted development with Claude",
+    summary:
+      "Architecting and shipping enterprise-scale internal platforms, approval workflows, and BI reporting systems.",
+    contributions: [
+      "Built Car Rental Management System (CRMS) serving 1,000+ users.",
+      "Developed HRIS for employee administration and attendance.",
+      "Designed CRMS Business Intelligence reporting system processing 10,000+ records.",
+      "Built internal company portal for centralized document management.",
+      "Used Go, GoFiber, ASP.NET, Next.js, Vite, SQL Server, Redis, and MySQL.",
     ],
-    stack: ["Go", "GoFiber", "Next.js", "Vite", "ASP.NET", "SQL Server", "Redis", "MySQL"],
+    stack: ["Go", "GoFiber", "ASP.NET", "Next.js", "Vite", "SQL Server", "Redis", "MySQL"],
+    variant: "light",
   },
   {
+    index: "02",
+    yearDisplay: "2022 — 2025",
+    period: "December 2022 — November 2025",
     role: "Backend Developer",
     company: "Aidi Digital Global",
-    period: "December 2022 — November 2025",
     location: "Tangerang / BSD",
     current: false,
-    points: [
-      "Developed backend systems using JavaScript, Go, and Node.js",
-      "Designed and implemented RESTful APIs",
-      "Built newsletter, invoice, and vendor management systems",
-      "Built frontend and backend for webset.id",
-      "Developed newsletter open/link tracking",
-      "Developed custom Twibbon features for klip.id",
-      "Optimized MongoDB and MySQL databases",
-      "Developed Employee API using Express.js and Node.js",
-      "Worked using Agile methodology",
+    summary:
+      "Engineered core backend services, RESTful APIs, and fullstack web products across multiple digital platforms.",
+    contributions: [
+      "Developed and maintained backend systems using JavaScript, Go, and Node.js.",
+      "Designed RESTful APIs for newsletter, invoice, and vendor management.",
+      "Built webset.id using React, Next.js, and MongoDB.",
+      "Implemented newsletter analytics for views and link clicks.",
+      "Developed custom Twibbon functionality for klip.id.",
+      "Managed MongoDB and MySQL databases.",
     ],
-    stack: ["JavaScript", "Go", "Node.js", "Express.js", "React", "Next.js", "MongoDB", "MySQL"],
+    stack: ["JavaScript", "Go", "Node.js", "React", "Next.js", "MongoDB", "MySQL"],
+    variant: "dark",
   },
 ];
 
-function JobCard({ job, index }: { job: (typeof jobs)[number]; index: number }) {
-  // Keep all roles expanded by default so HR can scan full career history without extra clicks
-  const [open, setOpen] = useState(true);
+function TimelineRow({ item, idx }: { item: ExperienceItem; idx: number }) {
+  const [expanded, setExpanded] = useState(true);
+  const isDark = item.variant === "dark";
 
   return (
-    <Reveal delay={index * 0.06} className="relative pl-10 sm:pl-14 pb-10 last:pb-0">
-      {/* Timeline node */}
-      <span
-        className={`absolute left-[11px] sm:left-[19px] top-6 w-3.5 h-3.5 rounded-full border-2 ${
-          job.current
-            ? "bg-emerald-400 border-emerald-400 shadow-[0_0_14px_2px_rgba(16,185,129,0.4)]"
-            : "bg-slate-800 border-slate-500"
-        }`}
-      />
-
-      <div className="rounded-2xl border border-slate-800/90 bg-[#0B111E]/90 glass-panel-hover overflow-hidden">
-        <button
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          className="w-full text-left p-6 sm:p-7 flex items-start justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-        >
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-xs font-mono font-medium uppercase tracking-[0.14em] text-cyan-400">
-                {job.period}
-              </span>
-              {job.current && (
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-mono font-medium uppercase tracking-wider text-emerald-300">
-                  Current Role
-                </span>
-              )}
-            </div>
-            <h3 className="mt-2.5 text-xl sm:text-2xl font-bold text-slate-50 tracking-tight">
-              {job.role}
-            </h3>
-            <p className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-300">
-              <span className="inline-flex items-center gap-1.5">
-                <Briefcase size={14} className="text-cyan-400" />
-                {job.company}
-              </span>
-              <span className="inline-flex items-center gap-1.5 text-slate-400">
-                <MapPin size={14} className="text-slate-400" />
-                {job.location}
-              </span>
-            </p>
-          </div>
-          <ChevronDown
-            size={18}
-            className={`shrink-0 mt-1 text-slate-400 transition-transform duration-300 ${
-              open ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-
-        <AnimatePresence initial={false}>
-          {open && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden"
-            >
-              <div className="px-6 sm:px-7 pb-7 pt-0">
-                <div className="h-px bg-slate-800/80 mb-5" />
-                <ul className="space-y-2.5">
-                  {job.points.map((p) => (
-                    <li key={p} className="flex gap-3 text-[15px] text-slate-300 leading-relaxed">
-                      <span className="mt-[9px] w-1.5 h-1.5 rounded-full bg-cyan-400 shrink-0" />
-                      {p}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {job.stack.map((t) => (
-                    <Tag key={t}>{t}</Tag>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
+    <Reveal delay={idx * 0.08} className="relative grid lg:grid-cols-12 gap-6 lg:gap-10 items-start">
+      {/* Left: Large Date Typography */}
+      <div className="lg:col-span-4 lg:sticky lg:top-28">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="font-mono text-xs uppercase tracking-[0.18em] text-[#4A515A]">
+            Role {item.index}
+          </span>
+          {item.current && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#D6FF62] text-[#17191C] text-[11px] font-mono font-semibold uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#17191C]" />
+              Current
+            </span>
           )}
-        </AnimatePresence>
+        </div>
+        <p className="font-display text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-[-0.04em] text-[#17191C] leading-none">
+          {item.yearDisplay}
+        </p>
+        <p className="mt-2 text-xs font-mono uppercase tracking-[0.14em] text-[#4A515A]">
+          {item.period}
+        </p>
+      </div>
+
+      {/* Right: Distinct Visual Treatment Panel */}
+      <div className="lg:col-span-8">
+        <div
+          className={`rounded-[2rem] transition-all duration-300 overflow-hidden ${
+            isDark
+              ? "bg-[#17191C] text-[#F8FAF7] shadow-[0_28px_56px_-18px_rgba(23,25,28,0.28)]"
+              : "bg-white text-[#17191C] border border-[#17191C]/10 shadow-[0_24px_48px_-16px_rgba(23,25,28,0.08)]"
+          }`}
+        >
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className="w-full text-left p-6 sm:p-9 flex items-start justify-between gap-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D6FF62]"
+          >
+            <div>
+              <p
+                className={`text-xs font-mono uppercase tracking-[0.15em] ${
+                  isDark ? "text-[#A5E8F5]" : "text-[#4A515A]"
+                }`}
+              >
+                {item.company} &bull; {item.location}
+              </p>
+              <h3 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight">
+                {item.role}
+              </h3>
+              <p
+                className={`mt-3 text-sm sm:text-[15px] leading-relaxed max-w-2xl ${
+                  isDark ? "text-[#F8FAF7]/75" : "text-[#4A515A]"
+                }`}
+              >
+                {item.summary}
+              </p>
+            </div>
+
+            <span
+              aria-hidden="true"
+              className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+                isDark
+                  ? "bg-white/10 text-[#D6FF62] hover:bg-white/15"
+                  : "bg-[#EFF4EE] text-[#17191C] hover:bg-[#D6FF62]"
+              }`}
+            >
+              {expanded ? <Minus size={17} /> : <Plus size={17} />}
+            </span>
+          </button>
+
+          <AnimatePresence initial={false}>
+            {expanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="px-6 sm:px-9 pb-8 pt-0">
+                  <div
+                    className={`h-px mb-6 ${isDark ? "bg-white/12" : "bg-[#17191C]/10"}`}
+                  />
+                  <ul className="space-y-3">
+                    {item.contributions.map((point) => (
+                      <li
+                        key={point}
+                        className={`flex items-start gap-3 text-[15px] leading-relaxed ${
+                          isDark ? "text-[#F8FAF7]/90" : "text-[#17191C]/85"
+                        }`}
+                      >
+                        <ArrowUpRight
+                          size={15}
+                          aria-hidden="true"
+                          className={`mt-1 shrink-0 ${
+                            isDark ? "text-[#D6FF62]" : "text-[#17191C]"
+                          }`}
+                        />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-7 flex flex-wrap gap-2">
+                    {item.stack.map((tech) => (
+                      <span
+                        key={tech}
+                        className={`px-3 py-1 rounded-full text-xs font-mono font-medium ${
+                          isDark
+                            ? "bg-white/10 text-[#F8FAF7] border border-white/10"
+                            : "bg-[#EFF4EE] text-[#17191C] border border-[#17191C]/8"
+                        }`}
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </Reveal>
   );
 }
 
 export default function Experience() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prefersReduced = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 75%", "end 70%"],
+  });
+  const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
   return (
-    <section id="experience" className="relative py-24 lg:py-32">
-      <div className="absolute inset-0 bg-dot-pattern [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_30%,transparent_100%)]" />
-
-      <div className="relative max-w-5xl mx-auto px-6">
-        <SectionHeading
-          eyebrow="Career"
-          title="Professional Experience"
-          subtitle="Three years of shipping systems that other people depend on to do their job."
-        />
-
-        <div className="mt-14 relative">
-          {/* Timeline rail */}
-          <span className="absolute left-[17px] sm:left-[25px] top-6 bottom-6 w-px bg-gradient-to-b from-emerald-400/50 via-slate-700 to-transparent" />
-          {jobs.map((job, i) => (
-            <JobCard key={job.company} job={job} index={i} />
-          ))}
-        </div>
-
-        {/* Education */}
-        <Reveal delay={0.1}>
-          <div className="mt-10 rounded-2xl border border-slate-800/90 bg-[#0B111E]/90 p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center gap-5 glass-panel-hover">
-            <div className="w-12 h-12 shrink-0 rounded-xl bg-cyan-400/10 border border-cyan-400/25 flex items-center justify-center text-cyan-400">
-              <GraduationCap size={22} />
-            </div>
-            <div className="flex-1">
-              <span className="text-xs font-mono font-medium uppercase tracking-[0.14em] text-cyan-400">
-                July 2021 — December 2025
-              </span>
-              <h3 className="mt-1.5 text-lg sm:text-xl font-bold text-slate-50 tracking-tight">
-                Bachelor&apos;s Degree — Informatics Engineering
-              </h3>
-              <p className="text-sm text-slate-300 mt-0.5">Universitas Gunadarma, Depok</p>
-            </div>
+    <section
+      id="experience"
+      ref={containerRef}
+      className="relative py-24 sm:py-32 bg-[#EFF4EE] bg-editorial-dots border-t border-[#17191C]/8"
+    >
+      <div className="max-w-7xl mx-auto px-5 sm:px-8">
+        {/* Header */}
+        <Reveal className="grid lg:grid-cols-12 gap-6 items-end mb-16 lg:mb-20">
+          <div className="lg:col-span-4">
+            <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-[#4A515A]">
+              <span className="w-2 h-2 rounded-full bg-[#83CFFF] ring-2 ring-[#17191C]/15" />
+              02 / Career Timeline
+            </span>
+          </div>
+          <div className="lg:col-span-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-[-0.035em] text-[#17191C] leading-[1.03]">
+              Where I&apos;ve built.
+            </h2>
+            <p className="text-sm font-mono text-[#4A515A]">
+              2022 &mdash; Present
+            </p>
           </div>
         </Reveal>
+
+        {/* Timeline with Scroll Progress Accent */}
+        <div className="relative">
+          <div
+            aria-hidden="true"
+            className="hidden lg:block absolute left-[31.5%] top-2 bottom-2 w-px bg-[#17191C]/10"
+          >
+            {!prefersReduced && (
+              <motion.div
+                style={{ scaleY, transformOrigin: "top" }}
+                className="w-full h-full bg-gradient-to-b from-[#D6FF62] via-[#83CFFF] to-[#C9B8FF]"
+              />
+            )}
+          </div>
+
+          <div className="space-y-12 lg:space-y-16">
+            {EXPERIENCES.map((item, idx) => (
+              <TimelineRow key={item.index} item={item} idx={idx} />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

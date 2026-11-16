@@ -4,596 +4,357 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,
-  MapPin,
   MessageCircle,
   ArrowUpRight,
-  Download,
   Copy,
   Check,
   Send,
-  CheckCircle2,
-  RotateCcw,
-  AlertCircle,
+  X,
+  Download,
 } from "lucide-react";
-import { Reveal, Github, Linkedin } from "./ui";
+import { GlossyBubble, Magnetic, Reveal } from "./MotionPrimitives";
 import { site } from "@/lib/site";
 
-const INQUIRY_TYPES = [
-  "Full-Time Role",
-  "Technical Interview",
-  "Contract / Project",
-  "General Inquiry",
-] as const;
-
-type InquiryType = (typeof INQUIRY_TYPES)[number];
-
-type FormState = {
-  name: string;
-  company: string;
-  email: string;
-  role: string;
-  message: string;
-};
-
-type FormErrors = Partial<Record<keyof FormState, string>>;
-
-const INITIAL_FORM: FormState = {
-  name: "",
-  company: "",
-  email: "",
-  role: "",
-  message: "",
-};
-
-const channels = [
-  { icon: MapPin, label: "Location", value: site.location, href: null },
-  { icon: Mail, label: "Email", value: site.email, href: `mailto:${site.email}` },
-  { icon: MessageCircle, label: "WhatsApp", value: site.whatsappLabel, href: site.whatsapp },
-  { icon: Linkedin, label: "LinkedIn", value: "muhammad-farhat", href: site.linkedin },
-  { icon: Github, label: "GitHub", value: "Geminiz215", href: site.github },
-];
-
 export default function Contact() {
-  const [inquiryType, setInquiryType] = useState<InquiryType>("Full-Time Role");
-  const [form, setForm] = useState<FormState>(INITIAL_FORM);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [submitted, setSubmitted] = useState(false);
-  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleCopyEmail = async () => {
     try {
       await navigator.clipboard.writeText(site.email);
-      setCopiedEmail(true);
-      setTimeout(() => setCopiedEmail(false), 2200);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
     } catch {
       window.location.href = `mailto:${site.email}`;
     }
   };
 
-  const validate = (): FormErrors => {
-    const next: FormErrors = {};
-    if (!form.name.trim()) next.name = "Please enter your name.";
-    if (!form.company.trim()) next.company = "Please enter your company or team name.";
-    if (!form.email.trim()) {
-      next.email = "Please enter your work email.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      next.email = "Please enter a valid email address.";
-    }
-    if (!form.message.trim() || form.message.trim().length < 10) {
-      next.message = "Please include a brief note (at least 10 characters).";
-    }
-    return next;
-  };
-
-  const buildMailtoHref = () => {
-    const subject = `[${inquiryType}] ${form.role ? `${form.role} — ` : ""}${form.company}`;
-    const body = [
-      `Hi Farhat,`,
-      ``,
-      `Name: ${form.name}`,
-      `Company: ${form.company}`,
-      `Email: ${form.email}`,
-      form.role ? `Role / Opportunity: ${form.role}` : null,
-      `Inquiry Type: ${inquiryType}`,
-      ``,
-      `Message:`,
-      form.message,
-    ]
-      .filter((line) => line !== null)
-      .join("\n");
-
-    return `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
-  const buildWhatsappHref = () => {
-    const text = `Hi Farhat, I'm ${form.name} from ${form.company} (${inquiryType}${
-      form.role ? ` — ${form.role}` : ""
-    }).\n\n${form.message}`;
-    return `${site.whatsapp}?text=${encodeURIComponent(text)}`;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
-    const nextErrors = validate();
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
-
-    setSubmitted(true);
-    window.location.href = buildMailtoHref();
-  };
-
-  const handleChange = (field: keyof FormState, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    if (!name.trim() || !email.trim() || message.trim().length < 6) {
+      setError("Please fill in your name, email, and a short message.");
+      return;
     }
+    setError("");
+    const subject = `Portfolio Inquiry from ${name.trim()}`;
+    const body = `Hi Fathi,\n\nName: ${name.trim()}\nEmail: ${email.trim()}\n\n${message.trim()}`;
+    window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
-
-  const handleReset = () => {
-    setForm(INITIAL_FORM);
-    setErrors({});
-    setSubmitted(false);
-  };
-
-  const inputBase =
-    "w-full h-12 px-4 rounded-xl bg-[#070B12] border text-[15px] text-slate-100 placeholder:text-slate-500 transition-colors duration-200 focus:outline-none focus:ring-2";
 
   return (
     <>
-      <section id="contact" className="relative py-24 lg:py-32 border-t border-slate-800/70">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[640px] h-[320px] radial-glow opacity-[0.08] blur-3xl pointer-events-none" />
+      <section
+        id="contact"
+        className="relative py-24 sm:py-36 bg-[#F8FAF7] overflow-hidden"
+      >
+        {/* Subtle luminous gradient wash */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[420px] opacity-55"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 60% at 50% 100%, rgba(165,232,245,0.45), rgba(214,255,98,0.22), transparent 80%)",
+          }}
+        />
 
-        <div className="relative max-w-7xl mx-auto px-6">
-          <Reveal className="max-w-2xl">
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-mono font-medium uppercase tracking-[0.14em] text-emerald-300">
-                Open to Opportunities
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8">
+          <div className="relative rounded-[2.75rem] bg-[#17191C] text-[#F8FAF7] p-8 sm:p-14 lg:p-20 overflow-hidden shadow-[0_36px_80px_-24px_rgba(23,25,28,0.35)]">
+            {/* Large Glossy Liquid Bubble Centerpiece */}
+            <GlossyBubble
+              tone="iridescent"
+              floatDuration={8.5}
+              floatY={14}
+              className="hidden md:flex absolute -right-12 -top-12 lg:right-8 lg:top-8 w-56 h-56 lg:w-72 lg:h-72 opacity-90 items-center justify-center animate-bubble-morph"
+            >
+              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#17191C] font-semibold bg-white/65 backdrop-blur-sm px-3.5 py-1.5 rounded-full">
+                Open to Talk
               </span>
-            </div>
+            </GlossyBubble>
 
-            <h2 className="mt-6 text-3xl sm:text-4xl lg:text-[2.75rem] font-bold tracking-tight text-slate-50 leading-[1.15]">
-              Let&apos;s discuss how I can contribute to your team.
-            </h2>
+            <GlossyBubble
+              tone="lime"
+              floatDuration={6.4}
+              floatY={8}
+              className="hidden lg:block absolute right-64 bottom-10 w-20 h-20 opacity-90"
+            />
 
-            <p className="mt-4 text-base sm:text-[17px] text-slate-300 leading-relaxed">
-              Whether you&apos;re hiring for a Backend / Fullstack Engineer role or scheduling a
-              technical interview, send a quick note below or reach out directly.
-            </p>
-          </Reveal>
+            <Reveal className="relative z-10 max-w-3xl">
+              <span className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.18em] text-[#D6FF62]">
+                <span className="w-2 h-2 rounded-full bg-[#D6FF62] animate-pulse" />
+                06 / Contact
+              </span>
 
-          <div className="mt-12 grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-10 items-start">
-            {/* ---- Left: HR Quick Actions & Direct Channels ---- */}
-            <Reveal delay={0.05} className="space-y-5">
-              <div className="rounded-2xl border border-slate-800/90 bg-[#0B111E]/90 p-6 sm:p-7">
-                <h3 className="text-lg font-bold text-slate-50 tracking-tight">
-                  Quick HR Actions
-                </h3>
-                <p className="mt-1.5 text-sm text-slate-300 leading-relaxed">
-                  Download my latest resume or copy my email for your ATS / interview invite.
-                </p>
+              <h2 className="mt-5 font-display text-4xl sm:text-5xl lg:text-7xl font-bold tracking-[-0.04em] leading-[1.0] text-[#F8FAF7]">
+                Have something interesting in mind?
+              </h2>
 
-                <div className="mt-5 flex flex-col sm:flex-row gap-3">
-                  <a
-                    href={site.cv}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 min-h-[48px] inline-flex items-center justify-center gap-2 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm px-5 py-3 rounded-xl transition-colors duration-200"
-                  >
-                    <Download size={16} />
-                    Download CV (PDF)
-                  </a>
+              <p className="mt-5 text-lg sm:text-xl text-[#F8FAF7]/75 max-w-xl leading-relaxed">
+                Let&apos;s build something meaningful together.
+              </p>
+
+              {/* Primary CTA + Quick Actions */}
+              <div className="mt-10 flex flex-wrap items-center gap-3.5">
+                <Magnetic>
                   <button
                     type="button"
-                    onClick={handleCopyEmail}
-                    className="flex-1 min-h-[48px] inline-flex items-center justify-center gap-2 border border-slate-700 bg-slate-900/80 hover:border-cyan-400/50 hover:bg-slate-800/80 text-slate-100 font-semibold text-sm px-5 py-3 rounded-xl transition-all duration-200"
+                    onClick={() => setComposerOpen(true)}
+                    className="inline-flex items-center gap-2.5 px-7 py-4 rounded-full glossy-pill-lime text-[#17191C] font-display font-bold text-sm sm:text-base tracking-tight cursor-pointer min-h-[50px]"
                   >
-                    {copiedEmail ? (
-                      <>
-                        <Check size={16} className="text-emerald-400" />
-                        <span className="text-emerald-300">Email Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy size={16} className="text-cyan-400" />
-                        <span>Copy Email</span>
-                      </>
-                    )}
+                    <span>Start a Conversation</span>
+                    <ArrowUpRight size={18} aria-hidden="true" />
                   </button>
-                </div>
-              </div>
+                </Magnetic>
 
-              {/* Direct Channels Grid */}
-              <div className="grid sm:grid-cols-2 lg:grid-cols-1 gap-3">
-                {channels.map((c) => {
-                  const content = (
-                    <div className="flex items-center justify-between gap-4 p-4 rounded-xl border border-slate-800/90 bg-[#0B111E]/80 hover:border-cyan-400/35 hover:bg-[#0E1523] transition-all duration-200">
-                      <div className="flex items-center gap-3.5 min-w-0">
-                        <div className="w-10 h-10 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-cyan-400 shrink-0">
-                          <c.icon size={17} />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-mono uppercase tracking-[0.12em] text-slate-400">
-                            {c.label}
-                          </p>
-                          <p className="text-sm font-medium text-slate-100 truncate mt-0.5">
-                            {c.value}
-                          </p>
-                        </div>
-                      </div>
-                      {c.href && <ArrowUpRight size={16} className="text-slate-400 shrink-0" />}
-                    </div>
-                  );
-
-                  return c.href ? (
-                    <a
-                      key={c.label}
-                      href={c.href}
-                      target={c.href.startsWith("mailto:") ? undefined : "_blank"}
-                      rel="noopener noreferrer"
-                      className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-xl"
-                    >
-                      {content}
-                    </a>
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  className="inline-flex items-center gap-2 px-5 py-4 rounded-full bg-white/10 hover:bg-white/16 border border-white/15 text-[#F8FAF7] text-sm font-medium transition-colors min-h-[50px]"
+                >
+                  {copied ? (
+                    <>
+                      <Check size={16} className="text-[#D6FF62]" aria-hidden="true" />
+                      <span className="text-[#D6FF62]">Copied {site.email}</span>
+                    </>
                   ) : (
-                    <div key={c.label}>{content}</div>
-                  );
-                })}
-              </div>
-            </Reveal>
-
-            {/* ---- Right: Interactive HR Inquiry Form ---- */}
-            <Reveal delay={0.1}>
-              <div className="rounded-2xl border border-slate-800/90 bg-[#0B111E]/95 p-6 sm:p-8 shadow-2xl shadow-black/30">
-                <AnimatePresence mode="wait">
-                  {submitted ? (
-                    <motion.div
-                      key="submitted"
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -12 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      className="py-6 text-center"
-                    >
-                      <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                        <CheckCircle2 size={28} />
-                      </div>
-                      <h3 className="mt-5 text-2xl font-bold text-slate-50 tracking-tight">
-                        Inquiry Ready to Send
-                      </h3>
-                      <p className="mt-2.5 text-[15px] text-slate-300 max-w-md mx-auto leading-relaxed">
-                        Your email client should open with your pre-filled message for{" "}
-                        <span className="text-slate-100 font-semibold">{inquiryType}</span>. You
-                        can also send it directly via WhatsApp.
-                      </p>
-
-                      <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
-                        <a
-                          href={buildMailtoHref()}
-                          className="min-h-[48px] inline-flex items-center gap-2 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm px-6 py-3 rounded-xl transition-colors"
-                        >
-                          <Mail size={16} />
-                          Open Email Client
-                        </a>
-                        <a
-                          href={buildWhatsappHref()}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="min-h-[48px] inline-flex items-center gap-2 border border-emerald-500/35 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-semibold text-sm px-5 py-3 rounded-xl transition-colors"
-                        >
-                          <MessageCircle size={16} />
-                          Send via WhatsApp
-                        </a>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={handleReset}
-                        className="mt-6 inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
-                      >
-                        <RotateCcw size={13} />
-                        Edit or send another inquiry
-                      </button>
-                    </motion.div>
-                  ) : (
-                    <motion.form
-                      key="form"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.25 }}
-                      onSubmit={handleSubmit}
-                      noValidate
-                      className="space-y-6"
-                    >
-                      <div>
-                        <h3 className="text-xl font-bold text-slate-50 tracking-tight">
-                          Send an HR / Hiring Inquiry
-                        </h3>
-                        <p className="mt-1 text-sm text-slate-400">
-                          Select an inquiry type and share role or interview details.
-                        </p>
-                      </div>
-
-                      {/* Inquiry Type Segmented Pills */}
-                      <div>
-                        <span className="block text-sm font-medium text-slate-200 mb-2.5">
-                          Inquiry Type
-                        </span>
-                        <div
-                          role="radiogroup"
-                          aria-label="Inquiry Type"
-                          className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2"
-                        >
-                          {INQUIRY_TYPES.map((type) => {
-                            const active = inquiryType === type;
-                            return (
-                              <button
-                                key={type}
-                                type="button"
-                                role="radio"
-                                aria-checked={active}
-                                onClick={() => setInquiryType(type)}
-                                className={`relative px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
-                                  active
-                                    ? "text-slate-950 font-semibold"
-                                    : "text-slate-300 bg-slate-900/70 border border-slate-800 hover:border-slate-700 hover:text-white"
-                                }`}
-                              >
-                                {active && (
-                                  <motion.span
-                                    layoutId="inquiryTypePill"
-                                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                                    className="absolute inset-0 rounded-xl bg-cyan-400 -z-0"
-                                  />
-                                )}
-                                <span className="relative z-10">{type}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Name & Company */}
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div>
-                          <label
-                            htmlFor="hr-name"
-                            className="block text-sm font-medium text-slate-200 mb-2"
-                          >
-                            Your Name <span className="text-cyan-400">*</span>
-                          </label>
-                          <input
-                            id="hr-name"
-                            type="text"
-                            autoComplete="name"
-                            placeholder="e.g. Sarah Wijaya"
-                            value={form.name}
-                            onChange={(e) => handleChange("name", e.target.value)}
-                            aria-invalid={Boolean(errors.name)}
-                            aria-describedby={errors.name ? "hr-name-error" : undefined}
-                            className={`${inputBase} ${
-                              errors.name
-                                ? "border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/20"
-                                : "border-slate-800 focus:border-cyan-400 focus:ring-cyan-400/20"
-                            }`}
-                          />
-                          {errors.name && (
-                            <p
-                              id="hr-name-error"
-                              className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-400"
-                            >
-                              <AlertCircle size={12} />
-                              {errors.name}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="hr-company"
-                            className="block text-sm font-medium text-slate-200 mb-2"
-                          >
-                            Company / Organization <span className="text-cyan-400">*</span>
-                          </label>
-                          <input
-                            id="hr-company"
-                            type="text"
-                            autoComplete="organization"
-                            placeholder="e.g. PT Tech Nusantara"
-                            value={form.company}
-                            onChange={(e) => handleChange("company", e.target.value)}
-                            aria-invalid={Boolean(errors.company)}
-                            aria-describedby={errors.company ? "hr-company-error" : undefined}
-                            className={`${inputBase} ${
-                              errors.company
-                                ? "border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/20"
-                                : "border-slate-800 focus:border-cyan-400 focus:ring-cyan-400/20"
-                            }`}
-                          />
-                          {errors.company && (
-                            <p
-                              id="hr-company-error"
-                              className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-400"
-                            >
-                              <AlertCircle size={12} />
-                              {errors.company}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Work Email & Role */}
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div>
-                          <label
-                            htmlFor="hr-email"
-                            className="block text-sm font-medium text-slate-200 mb-2"
-                          >
-                            Work Email <span className="text-cyan-400">*</span>
-                          </label>
-                          <input
-                            id="hr-email"
-                            type="email"
-                            autoComplete="email"
-                            placeholder="sarah@company.com"
-                            value={form.email}
-                            onChange={(e) => handleChange("email", e.target.value)}
-                            aria-invalid={Boolean(errors.email)}
-                            aria-describedby={errors.email ? "hr-email-error" : undefined}
-                            className={`${inputBase} ${
-                              errors.email
-                                ? "border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/20"
-                                : "border-slate-800 focus:border-cyan-400 focus:ring-cyan-400/20"
-                            }`}
-                          />
-                          {errors.email && (
-                            <p
-                              id="hr-email-error"
-                              className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-400"
-                            >
-                              <AlertCircle size={12} />
-                              {errors.email}
-                            </p>
-                          )}
-                        </div>
-
-                        <div>
-                          <label
-                            htmlFor="hr-role"
-                            className="block text-sm font-medium text-slate-200 mb-2"
-                          >
-                            Role / Position{" "}
-                            <span className="text-xs font-normal text-slate-400">(Optional)</span>
-                          </label>
-                          <input
-                            id="hr-role"
-                            type="text"
-                            placeholder="e.g. Backend Engineer (Go)"
-                            value={form.role}
-                            onChange={(e) => handleChange("role", e.target.value)}
-                            className={`${inputBase} border-slate-800 focus:border-cyan-400 focus:ring-cyan-400/20`}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Message */}
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <label
-                            htmlFor="hr-message"
-                            className="block text-sm font-medium text-slate-200"
-                          >
-                            Message / Interview Details <span className="text-cyan-400">*</span>
-                          </label>
-                          <span className="text-xs font-mono text-slate-400">
-                            {form.message.length}/1000
-                          </span>
-                        </div>
-                        <textarea
-                          id="hr-message"
-                          rows={4}
-                          maxLength={1000}
-                          placeholder="Share the role overview, work arrangement (onsite/hybrid/remote), or preferred interview schedule..."
-                          value={form.message}
-                          onChange={(e) => handleChange("message", e.target.value)}
-                          aria-invalid={Boolean(errors.message)}
-                          aria-describedby={errors.message ? "hr-message-error" : undefined}
-                          className={`w-full p-4 rounded-xl bg-[#070B12] border text-[15px] text-slate-100 placeholder:text-slate-500 leading-relaxed resize-y transition-colors duration-200 focus:outline-none focus:ring-2 ${
-                            errors.message
-                              ? "border-rose-500/70 focus:border-rose-400 focus:ring-rose-500/20"
-                              : "border-slate-800 focus:border-cyan-400 focus:ring-cyan-400/20"
-                          }`}
-                        />
-                        {errors.message && (
-                          <p
-                            id="hr-message-error"
-                            className="mt-1.5 flex items-center gap-1.5 text-xs text-rose-400"
-                          >
-                            <AlertCircle size={12} />
-                            {errors.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="pt-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <p className="text-xs text-slate-400">
-                          Usually responds within <span className="text-slate-200">24 hours</span>.
-                        </p>
-                        <button
-                          type="submit"
-                          className="min-h-[48px] inline-flex items-center justify-center gap-2 bg-cyan-400 hover:bg-cyan-300 active:scale-[0.99] text-slate-950 font-bold text-sm px-7 py-3 rounded-xl transition-all duration-200 shadow-lg shadow-cyan-500/15"
-                        >
-                          <Send size={16} />
-                          Send Inquiry
-                        </button>
-                      </div>
-                    </motion.form>
+                    <>
+                      <Copy size={16} aria-hidden="true" />
+                      <span>{site.email}</span>
+                    </>
                   )}
-                </AnimatePresence>
+                </button>
+
+                <a
+                  href={site.cv}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-4 rounded-full bg-white/6 hover:bg-white/12 border border-white/10 text-[#F8FAF7]/90 text-sm font-medium transition-colors min-h-[50px]"
+                >
+                  <Download size={15} aria-hidden="true" />
+                  <span>CV (PDF)</span>
+                </a>
+              </div>
+
+              {/* Direct Verified Channels */}
+              <div className="mt-12 pt-8 border-t border-white/12 grid sm:grid-cols-3 gap-4">
+                <a
+                  href={`mailto:${site.email}`}
+                  className="group p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 transition-colors flex items-center justify-between gap-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#F8FAF7]/55">
+                      Email
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-[#F8FAF7] truncate">
+                      {site.email}
+                    </p>
+                  </div>
+                  <Mail
+                    size={16}
+                    aria-hidden="true"
+                    className="text-[#D6FF62] shrink-0 transition-transform group-hover:translate-x-0.5"
+                  />
+                </a>
+
+                <a
+                  href={site.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 transition-colors flex items-center justify-between gap-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#F8FAF7]/55">
+                      LinkedIn
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-[#F8FAF7] truncate">
+                      muhammad-farhat
+                    </p>
+                  </div>
+                  <ArrowUpRight
+                    size={16}
+                    aria-hidden="true"
+                    className="text-[#83CFFF] shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
+                </a>
+
+                <a
+                  href={site.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 transition-colors flex items-center justify-between gap-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-[#F8FAF7]/55">
+                      WhatsApp
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-[#F8FAF7] truncate">
+                      {site.whatsappLabel}
+                    </p>
+                  </div>
+                  <MessageCircle
+                    size={16}
+                    aria-hidden="true"
+                    className="text-[#B7F5DA] shrink-0 transition-transform group-hover:scale-110"
+                  />
+                </a>
               </div>
             </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ---- Footer ---- */}
-      <footer className="border-t border-slate-800/80 bg-[#05080E]">
-        <div className="max-w-7xl mx-auto px-6 py-14">
-          <div className="grid md:grid-cols-[1.4fr_1fr] gap-10">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-lg bg-slate-100 text-slate-950 flex items-center justify-center font-extrabold text-sm tracking-tighter">
-                  MF
-                </div>
-                <div>
-                  <p className="text-slate-50 font-bold text-sm tracking-tight uppercase">
-                    {site.name}
-                  </p>
-                  <p className="text-xs font-mono text-slate-400 mt-0.5">{site.role}</p>
-                </div>
-              </div>
-              <p className="mt-5 max-w-sm text-sm text-slate-400 leading-relaxed">
-                Building scalable software from backend to interface.
-              </p>
-            </div>
-
-            <div className="flex md:justify-end">
-              <div>
-                <p className="text-xs font-mono uppercase tracking-[0.14em] text-slate-400">
-                  Elsewhere
-                </p>
-                <div className="mt-4 flex gap-2.5">
-                  {[
-                    { href: site.linkedin, icon: Linkedin, label: "LinkedIn" },
-                    { href: site.github, icon: Github, label: "GitHub" },
-                    { href: site.whatsapp, icon: MessageCircle, label: "WhatsApp" },
-                    { href: `mailto:${site.email}`, icon: Mail, label: "Email" },
-                  ].map(({ href, icon: Icon, label }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      target={href.startsWith("mailto:") ? undefined : "_blank"}
-                      rel="noopener noreferrer"
-                      aria-label={label}
-                      className="w-11 h-11 rounded-lg border border-slate-800 bg-slate-900/70 flex items-center justify-center text-slate-300 hover:text-cyan-400 hover:border-cyan-400/40 transition-all duration-200"
-                    >
-                      <Icon size={17} />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
+      {/* Footer */}
+      <footer className="bg-[#F8FAF7] border-t border-[#17191C]/10 py-10">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#4A515A]">
+          <div className="flex items-center gap-3">
+            <span
+              className="w-8 h-8 rounded-full glossy-sphere flex items-center justify-center font-display font-bold text-[11px] text-[#17191C]"
+              style={{
+                background:
+                  "radial-gradient(circle at 30% 28%, #F4FFCC 0%, #D6FF62 55%, #A5E8F5 100%)",
+              }}
+            >
+              FF
+            </span>
+            <span className="font-medium text-[#17191C]">Designed &amp; Developed by Fathi.</span>
           </div>
 
-          <div className="mt-12 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-slate-400">&copy; 2026 {site.name}</p>
-            <p className="text-xs font-mono text-slate-400">
-              Built with Next.js, Tailwind CSS &amp; Framer Motion
-            </p>
+          <div className="flex items-center gap-6 text-xs font-mono uppercase tracking-[0.12em]">
+            <a
+              href={site.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#17191C] transition-colors"
+            >
+              GitHub
+            </a>
+            <a
+              href={site.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#17191C] transition-colors"
+            >
+              LinkedIn
+            </a>
+            <a href={`mailto:${site.email}`} className="hover:text-[#17191C] transition-colors">
+              Email
+            </a>
           </div>
         </div>
       </footer>
+
+      {/* Interactive Conversation Modal */}
+      <AnimatePresence>
+        {composerOpen && (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="contact-modal-title"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setComposerOpen(false)}
+            className="fixed inset-0 z-50 bg-[#17191C]/65 backdrop-blur-md p-4 flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 14 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 14 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-lg rounded-[2rem] bg-[#F8FAF7] text-[#17191C] p-6 sm:p-8 shadow-2xl border border-white"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-mono uppercase tracking-[0.15em] text-[#4A515A]">
+                    Direct Note
+                  </p>
+                  <h3
+                    id="contact-modal-title"
+                    className="mt-1 font-display text-2xl font-bold tracking-tight"
+                  >
+                    Start a Conversation
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setComposerOpen(false)}
+                  aria-label="Close message composer"
+                  className="w-10 h-10 rounded-full bg-[#17191C]/8 hover:bg-[#17191C] hover:text-[#F8FAF7] flex items-center justify-center transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSend} className="mt-6 space-y-4">
+                <div>
+                  <label htmlFor="c-name" className="block text-xs font-mono uppercase tracking-wider text-[#4A515A] mb-1.5">
+                    Your Name
+                  </label>
+                  <input
+                    id="c-name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Alex Rivera"
+                    className="w-full h-12 px-4 rounded-2xl bg-white border border-[#17191C]/12 text-sm text-[#17191C] focus:outline-none focus:ring-2 focus:ring-[#17191C]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="c-email" className="block text-xs font-mono uppercase tracking-wider text-[#4A515A] mb-1.5">
+                    Email
+                  </label>
+                  <input
+                    id="c-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="alex@company.com"
+                    className="w-full h-12 px-4 rounded-2xl bg-white border border-[#17191C]/12 text-sm text-[#17191C] focus:outline-none focus:ring-2 focus:ring-[#17191C]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="c-msg" className="block text-xs font-mono uppercase tracking-wider text-[#4A515A] mb-1.5">
+                    Message
+                  </label>
+                  <textarea
+                    id="c-msg"
+                    rows={4}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Tell me about your project, team, or idea..."
+                    className="w-full p-4 rounded-2xl bg-white border border-[#17191C]/12 text-sm text-[#17191C] resize-y focus:outline-none focus:ring-2 focus:ring-[#17191C]"
+                  />
+                </div>
+
+                {error && <p className="text-xs text-rose-600 font-medium">{error}</p>}
+
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
+                  <a
+                    href={site.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#4A515A] hover:text-[#17191C]"
+                  >
+                    <MessageCircle size={14} aria-hidden="true" />
+                    Or chat on WhatsApp
+                  </a>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full glossy-pill-lime text-[#17191C] font-display font-bold text-sm min-h-[44px]"
+                  >
+                    <Send size={15} aria-hidden="true" />
+                    Send via Email
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

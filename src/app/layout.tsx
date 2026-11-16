@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import MotionProvider from "@/components/MotionProvider";
 import "./globals.css";
 
-const plusJakarta = Plus_Jakarta_Sans({
+const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
 });
 
 const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -20,22 +21,22 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
-const title = "Muhammad Fathi Farhat — Backend & Fullstack Software Developer";
+const title = "Muhammad Fathi Farhat — Backend & Fullstack Developer";
 const description =
-  "Backend & Fullstack Developer with 3+ years of experience building scalable web applications and internal enterprise systems. Go, Next.js, React, ASP.NET, SQL Server, MongoDB, Redis.";
+  "Backend & Fullstack Developer based in Jakarta with 3+ years of experience building scalable applications, enterprise approval systems, and thoughtful digital products.";
 
 export const metadata: Metadata = {
   title,
   description,
   keywords: [
+    "Muhammad Fathi Farhat",
+    "Fathi Farhat",
     "Backend Developer",
     "Fullstack Developer",
-    "Golang Developer",
-    "Software Engineer",
+    "Go Developer",
     "Next.js",
-    "Go",
     "Jakarta",
-    "Muhammad Fathi Farhat",
+    "flowgo.id",
   ],
   authors: [{ name: "Muhammad Fathi Farhat" }],
   openGraph: {
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
     description,
     type: "website",
     locale: "en_US",
-    siteName: "Muhammad Fathi Farhat",
+    siteName: "Fathi Farhat",
     images: [{ url: "/profile.png", width: 1095, height: 1600, alt: "Muhammad Fathi Farhat" }],
   },
   twitter: {
@@ -55,16 +56,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#070B12",
+  themeColor: "#F8FAF7",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${plusJakarta.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#070B12] text-slate-100 selection:bg-cyan-400/20 selection:text-cyan-200">
+      <body className="min-h-full flex flex-col bg-[#F8FAF7] text-[#17191C]">
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
